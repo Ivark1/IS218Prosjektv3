@@ -57,10 +57,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
               }).addTo(bunkerLayer)
                 .bindPopup(`
-                  <b>Public Bunker</b><br>
-                  Address: ${point.adresse}<br>
-                  Capacity: ${point.plasser} people<br>
-                  Room Nr: ${point.romnr}
+                  <b>Offentlig tilfluktsrom</b><br>
+                  Addresse: ${point.adresse}<br>
+                  Kapasitet: ${point.plasser} people<br>
+                  Romnr: ${point.romnr}
                 `);
             } catch (error) {
               console.error(`Error converting coordinates for bunker ${index}:`, error);
