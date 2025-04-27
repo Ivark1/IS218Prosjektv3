@@ -427,7 +427,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Setup layer control checkboxes
         setTimeout(() => {
             // Setup event listeners for checkboxes that are now in the button-container
-            document.getElementById('shelter-checkbox').addEventListener('change', function (e) {
+            document.getElementByid('shelter-checkbox').addEventListener('change', function (e) {
                 if (e.target.checked) {
                     map.addLayer(shelterLayer);
                 } else {
@@ -435,7 +435,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            document.getElementById('bunker-checkbox').addEventListener('change', function (e) {
+            document.getElementByid('bunker-checkbox').addEventListener('change', function (e) {
                 if (e.target.checked) {
                     map.addLayer(bunkerLayer);
                 } else {
@@ -443,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            document.getElementById('position-checkbox').addEventListener('change', function (e) {
+            document.getElementByid('position-checkbox').addEventListener('change', function (e) {
                 if (e.target.checked) {
                     map.addLayer(positionLayer);
                 } else {
@@ -451,7 +451,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            document.getElementById('custom-checkbox').addEventListener('change', function (e) {
+            document.getElementByid('custom-checkbox').addEventListener('change', function (e) {
                 if (e.target.checked) {
                     map.addLayer(customLayer);
                 } else {
@@ -460,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             // Add event listener for route checkbox
-            document.getElementById('route-checkbox').addEventListener('change', function (e) {
+            document.getElementByid('route-checkbox').addEventListener('change', function (e) {
                 if (e.target.checked) {
                     map.addLayer(routeLayer);
                     // If the info box exists, show it when routes are enabled
@@ -477,7 +477,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             // Add event listener for locate button
-            document.getElementById('locate-button').addEventListener('click', function () {
+            document.getElementByid('locate-button').addEventListener('click', function () {
                 map.locate({
                     setView: true,
                     maxZoom: 16,
@@ -486,7 +486,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             // Add event listener for clear custom marker button
-            document.getElementById('clear-custom-button').addEventListener('click', function () {
+            document.getElementByid('clear-custom-button').addEventListener('click', function () {
                 if (customMarker) {
                     customLayer.clearLayers();
                     customMarker = null;

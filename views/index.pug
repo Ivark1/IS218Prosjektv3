@@ -32,6 +32,11 @@ block content
         div.layer-control-item
           input(type="checkbox", id="population-checkbox", checked)
           label(for="population-checkbox") Befolkning
+        div.layer-control-item
+          input(type="checkbox", id="isochrone-checkbox")
+          label(for="isochrone-checkbox") 
+            | Tilgjengelighet (Gåavstand)
+            span(style="display: inline-block; width: 20px; height: 8px; background: linear-gradient(to right, #e6c3ff, #9966cc); margin-left: 4px; vertical-align: middle;")
     div.map-container
       div#map
     
@@ -71,6 +76,7 @@ block content
     window.shelterData = !{shelterData || 'null'};
     window.bunkerData = !{bunkerData || 'null'};
     window.populationData = !{populationData || 'null'};
+    window.isochroneData = !{isochroneData || 'null'};
   script(
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
