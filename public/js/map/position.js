@@ -172,11 +172,7 @@ function setupCustomMarker(map, customLayer, shelterLayer, bunkerLayer, routeLay
         }
 
         // Build popup content
-        if (closestShelter.marker) {
-            popupContent += `<b>Nærmeste Alternative Tilfluktsrom:</b> ${distanceShelter} ${distanceUnitShelter}<br>`;
-        } else {
-            popupContent += `<b>Ingen Alternative Tilfluktsrom funnet</b><br>`;
-        }
+        popupContent = '';
 
         if (closestBunker.marker) {
             let bunkerDetails = '';
@@ -190,8 +186,15 @@ function setupCustomMarker(map, customLayer, shelterLayer, bunkerLayer, routeLay
             if (bunkerDetails) {
                 popupContent += `<br><small>${bunkerDetails}</small>`;
             }
+            popupContent += `<br>`;
         } else {
-            popupContent += `<b>Ingen Tilfluktsrom funnet</b>`;
+            popupContent += `<b>Ingen Tilfluktsrom funnet</b><br>`;
+        }
+
+        if (closestShelter.marker) {
+            popupContent += `<b>Nærmeste Alternative Tilfluktsrom:</b> ${distanceShelter} ${distanceUnitShelter}<br>`;
+        } else {
+            popupContent += `<b>Ingen Alternative Tilfluktsrom funnet</b><br>`;
         }
 
         customMarker.bindPopup(popupContent).openPopup();
