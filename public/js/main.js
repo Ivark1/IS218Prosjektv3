@@ -9,6 +9,7 @@ import { createLayers, addShelters, addBunkers } from './map/layers.js';
 import { setupLocationTracking, setupCustomMarker } from './map/position.js';
 import { createLocateControl, setupLayerControls } from './map/controls.js';
 import { initializeDrawing } from './map/drawing.js';
+import { addIsochrones } from './map/isochrones.js';
 
 document.addEventListener('DOMContentLoaded', async function () {
     try {
@@ -29,6 +30,11 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Add data points to map
         addShelters(window.shelterData, layers.shelterLayer, icons.shelterIcon);
         addBunkers(window.bunkerData, layers.bunkerLayer, icons.bunkerIcon);
+
+        // Add isochrones if data exists
+        if (window.isochroneData) {
+            addIsochrones(window.isochroneData, layers.isochroneLayer);
+        }
 
         // Setup location tracking
         const locationTracker = setupLocationTracking(

@@ -12,13 +12,15 @@ function createLayers(map) {
     const positionLayer = L.layerGroup().addTo(map);
     const customLayer = L.layerGroup().addTo(map);
     const routeLayer = L.layerGroup().addTo(map);
+    const isochroneLayer = L.layerGroup();
 
     return {
         shelterLayer,
         bunkerLayer,
         positionLayer,
         customLayer,
-        routeLayer
+        routeLayer,
+        isochroneLayer
     };
 }
 

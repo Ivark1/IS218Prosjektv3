@@ -1,17 +1,16 @@
 .map-container {
-    position: relative;
+    width: auto;
+    height: 600px;
+    border-radius: 8px;
+  }
+  
+  #map {
     width: 100%;
-    margin: 20px 0;
-}
+    height: 100%;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
 
-#map {
-    height: 400px;
-    width: 100%;
-    border-radius: 5px;
-    overflow: hidden;
-    position: relative;
-    z-index: 1;
-}
 .custom-div-icon {
     background: #ff0000;
     border: 1px solid #000;
@@ -21,3 +20,6 @@
     margin-left: -6px;
     margin-top: -6px;
 }
+
+
+

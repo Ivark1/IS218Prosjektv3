@@ -87,8 +87,18 @@ function setupLayerControls(map, layers) {
             } else {
                 map.removeLayer(layers.routeLayer);
             }
-        });
+        });    
+
+        if (document.getElementById('isochrone-checkbox')) {
+            document.getElementById('isochrone-checkbox').addEventListener('change', function (e) {
+                if (e.target.checked) {
+                    map.addLayer(layers.isochroneLayer);
+                } else {
+                    map.removeLayer(layers.isochroneLayer);
+                }
+            });
+        }
     }, 200);
-}
+}            
 
 export { createLocateControl, setupLayerControls };

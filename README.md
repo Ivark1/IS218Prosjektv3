@@ -140,7 +140,7 @@ Denne applikasjonen demonstrerer hvordan geografisk IT-utvikling kan brukes til 
 Gjennom prosjektet har vi oppnådd følgende:
 
 1. **Kartlagt dekningsgraden** for tilfluktsrom i forhold til befolkning i Agder
-2. **Identifisert geografiske områder** med kapasitetsutfordringer
+2. **identifisert geografiske områder** med kapasitetsutfordringer
 3. **Utviklet verktøy** for romlig analyse av beredskapsinfrastruktur
 4. **Demonstrert verdien** av åpne datasett for samfunnssikkerhet
 
