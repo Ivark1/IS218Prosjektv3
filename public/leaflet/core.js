@@ -515,4 +515,18 @@ document.addEventListener('DOMContentLoaded', function () {
     } catch (error) {
         console.error('Map initialization error:', error);
     }
+    
+    // 📦 Sidebar toggle-knapp med ikonbytte
+    const toggleButton = document.querySelector('.menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+
+    if (toggleButton && sidebar) {
+        toggleButton.addEventListener('click', () => {
+            sidebar.classList.toggle('closed');
+            toggleButton.textContent = sidebar.classList.contains('closed') ? '➤' : '☰';
+        });
+
+        // Sett korrekt ikon ved lasting
+        toggleButton.textContent = sidebar.classList.contains('closed') ? '➤' : '☰';
+    }
 });

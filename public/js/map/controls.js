@@ -26,6 +26,30 @@ function createLocateControl(map, locationTracker, customMarkerHandler) {
 
     locateControl.addTo(map);
 
+    // Zoom-knapper øverst til høyre
+    L.control.zoom({ position: 'topright' }).addTo(map);
+
+    // Zoom level control
+    const zoomControl = L.control({ position: 'bottomright' });
+
+    zoomControl.onAdd = function () {
+        const div = L.DomUtil.create('div', 'zoom-level-control');
+        div.style.backgroundColor = 'white';
+        div.style.padding = '4px 8px';
+        div.style.borderRadius = '4px';
+        div.style.boxShadow = '0 1px 4px rgba(0,0,0,0.2)';
+        div.style.fontSize = '14px';
+        div.innerHTML = `Zoom: ${map.getZoom()}`;
+
+        map.on('zoomend', () => {
+            div.innerHTML = `Zoom: ${map.getZoom()}`;
+        });
+
+        return div;
+    };
+
+    zoomControl.addTo(map);
+    
     // Add event listener for locate button
     setTimeout(() => {
         document.getElementById('locate-button').addEventListener('click', function () {
