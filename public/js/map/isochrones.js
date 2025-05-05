@@ -44,9 +44,12 @@ function addIsochrones(isochroneData, isochroneLayer) {
                 }
             }).addTo(isochroneLayer);
             
-            // Add popup with basic info if needed
+            // Store walking time as property instead of binding a popup
+            polygon.walkingTime = minutes;
+            
+            // We store the content but don't bind it to show on the map
             const popupContent = `<strong>Gåavstand:</strong> ${minutes} minutter`;
-            polygon.bindPopup(popupContent);
+            polygon.popupContent = popupContent;
             
         } catch (error) {
             console.error(`Error processing isochrone ${index}:`, error);
@@ -59,14 +62,17 @@ function setupIsochroneClickHandling(isochroneLayer, map) {
     if (!isochroneLayer || !map) return;
     
     isochroneLayer.eachLayer(function(layer) {
-        // Remove default click handler
-        layer.off('click');
-        
         // Add custom click handler
         layer.on('click', function(e) {
-            // Show the popup
-            if (layer.getPopup()) {
-                layer.openPopup(e.latlng);
+            // Update the info panel with walking time
+            const minutes = layer.walkingTime || "ukjent";
+            const infoPanel = document.getElementById('position-info');
+            
+            if (infoPanel) {
+                infoPanel.innerHTML = `<div style="padding: 10px; background-color: #e9f5ff; border-radius: 4px; margin-bottom: 10px;">
+                    <h4>Gåavstand</h4>
+                    <p>${minutes} minutter</p>
+                </div>`;
             }
             
             // Trigger a map click at the same location
