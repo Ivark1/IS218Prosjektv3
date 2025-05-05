@@ -21,6 +21,7 @@ function initializeDrawing(map) {
 
     // Set up draw control options
     const drawControl = new L.Control.Draw({
+        position: 'topright',
         draw: {
             polyline: false,
             marker: false,
@@ -37,7 +38,7 @@ function initializeDrawing(map) {
             remove: true
         }
     });
-
+    
     map.addControl(drawControl);
 
     // Create population layer

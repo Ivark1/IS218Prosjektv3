@@ -17,14 +17,43 @@ function createLocateControl(map, locationTracker, customMarkerHandler) {
             </button>
           </div>
         `;
-    
+
         // Prevent map clicks from propagating through the control
         L.DomEvent.disableClickPropagation(div);
-    
+
         return div;
     };
 
     locateControl.addTo(map);
+
+    // Zoom-knapper øverst til høyre
+    L.control.zoom({ position: 'topright' }).addTo(map);
+
+    // Zoom level control
+    const zoomControl = L.control({ position: 'bottomright' });
+
+    zoomControl.onAdd = function () {
+        const div = L.DomUtil.create('div', 'zoom-level-control');
+        div.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="padding: 10px; background: white; border: 1px solid #ccc; border-radius: 4px; display: flex; align-items: center;">
+              <span style="font-size: 16px; line-height: 10px;">Zoom: ${map.getZoom()}</span>
+            </div>
+          </div>
+        `;
+
+        map.on('zoomend', () => {
+            const span = div.querySelector('span');
+            if (span) span.textContent = `Zoom: ${map.getZoom()}`;
+        });
+
+        // Prevent map clicks from propagating through the control
+        L.DomEvent.disableClickPropagation(div);
+
+        return div;
+    };
+
+    zoomControl.addTo(map);
 
     // Add event listener for locate button
     setTimeout(() => {
@@ -87,7 +116,7 @@ function setupLayerControls(map, layers) {
             } else {
                 map.removeLayer(layers.routeLayer);
             }
-        });    
+        });
 
         if (document.getElementById('isochrone-checkbox')) {
             document.getElementById('isochrone-checkbox').addEventListener('change', function (e) {
@@ -99,6 +128,6 @@ function setupLayerControls(map, layers) {
             });
         }
     }, 200);
-}            
+}
 
 export { createLocateControl, setupLayerControls };

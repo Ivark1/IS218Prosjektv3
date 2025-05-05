@@ -1,170 +1,232 @@
 .content-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-    width: 100%;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    padding: 2em;
-    box-sizing: border-box;
-  }
-  
-  .title-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-bottom: 1em;
-  }
-  
-  .title-container p {
-    color: #666;
-  }
-  
-  .button-container {
-    display: flex;
-    justify-content: space-evenly;
-    padding: 1em;
-    border-radius: 8px;
-    border: #bbcad5 2px solid;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  }
-  
-  .layer-controls {
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-    justify-content: space-evenly;
-  }
-  
-  .layer-control-item {
-    display: flex;
-    align-items: center;
-    gap: 0.4em;
-    background-color: white;
-    padding: 0.5em 0.8em;
-    border-radius: 4px;
-    border: #bbcad5 2px solid;
-    white-space: nowrap;
-  }
-  
-  .layer-control-item label {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    font-size: 0.9em;
-  }
-  
-  .layer-control-item input[type="checkbox"] {
-    margin-right: 0.4em;
-    cursor: pointer;
-  }
-  
-  .info-container {
-    display: flex;
-    justify-content: space-evenly;
-    border-radius: 8px;
-    gap: 2em;
-  }
-  
-  .left, .right {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1em;
-    border: #bbcad5 2px solid;
-    border-radius: 8px;
-    padding: 1em;
-    flex: 1;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  width: 100%;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 2em;
+  box-sizing: border-box;
+}
 
-  .layer-control-item {
-    transition: background-color 0.3s ease;
-    cursor: pointer;
-  }
-  
-  #locate-button, 
-  #clear-custom-button {
-    transition: background-color 0.3s ease;
-    cursor: pointer;
-  }
-  
-  .layer-control-item:hover {
-    background-color: #bbcad5;
-  }
-  
-  #locate-button:hover, 
-  #clear-custom-button:hover {
-    background-color: #bbcad5;
-  }
+.title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 1em;
+}
 
-  .right ul {
-    list-style: none;
-    padding-left: 0;
-    margin-top: 10px;
-  }
-  
-  .right li {
-    position: relative;
-    padding: 8px 0 8px 28px;
-    margin-bottom: 6px;
-    border-bottom: 1px solid #ececec;
-  }
-  
-  .right li:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-  }
-  
-  .right li:before {
-    content: "•";
-    color: #4a89dc;
-    font-size: 18px;
-    position: absolute;
-    left: 8px;
-    top: 7px;
-  }
+.title-container p {
+  color: #666;
+}
 
-  .left {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.8em;
-    border: #bbcad5 2px solid;
-    border-radius: 8px;
-    padding: 1.5em;
-    flex: 1;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    text-align: left;
-  }
-  
-  .left h3 {
-    align-self: center;
-    margin-bottom: 0.5em;
-    color: #333;
-  }
-  
-  .left p {
-    margin: 0;
-    line-height: 1.5;
-    color: #4b5563;
-  }
-  
-  .left p:nth-child(3) {
-    font-weight: 500;
-    margin-bottom: 0.5em;
-  }
-  
-  .left, .right {
-    align-items: flex-start;
-    padding: 1.5em;
-  }
-  
-  .left h3, .right h3 {
-    align-self: center;
-    margin-bottom: 0.5em;
-    color: #333;
-    width: 100%;
-    text-align: center;
-  }
+.button-container {
+  display: flex;
+  justify-content: space-evenly;
+  padding: 1em;
+  border-radius: 8px;
+  border: #bbcad5 2px solid;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.layer-controls {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: space-evenly;
+}
+
+.layer-control-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  background-color: white;
+  padding: 0.5em 0.8em;
+  border-radius: 4px;
+  border: #bbcad5 2px solid;
+  white-space: nowrap;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.layer-control-item label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.layer-control-item input[type="checkbox"] {
+  margin-right: 0.4em;
+  cursor: pointer;
+}
+
+.layer-control-item:hover {
+  background-color: #bbcad5;
+}
+
+#locate-button,
+#clear-custom-button {
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+#locate-button:hover,
+#clear-custom-button:hover {
+  background-color: #bbcad5;
+}
+
+.info-container {
+  display: flex;
+  justify-content: space-evenly;
+  border-radius: 8px;
+  gap: 2em;
+}
+
+.left,
+.right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+  border: #bbcad5 2px solid;
+  border-radius: 8px;
+  padding: 1em;
+  flex: 1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.right ul {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 10px;
+}
+
+.right li {
+  position: relative;
+  padding: 8px 0 8px 28px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid #ececec;
+}
+
+.right li:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.right li:before {
+  content: "•";
+  color: #4a89dc;
+  font-size: 18px;
+  position: absolute;
+  left: 8px;
+  top: 7px;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.8em;
+  border: #bbcad5 2px solid;
+  border-radius: 8px;
+  padding: 1.5em;
+  flex: 1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  text-align: left;
+}
+
+.left h3 {
+  align-self: center;
+  margin-bottom: 0.5em;
+  color: #333;
+}
+
+.left p {
+  margin: 0;
+  line-height: 1.5;
+  color: #4b5563;
+}
+
+.left p:nth-child(3) {
+  font-weight: 500;
+  margin-bottom: 0.5em;
+}
+
+.left,
+.right {
+  align-items: flex-start;
+  padding: 1.5em;
+}
+
+.left h3,
+.right h3 {
+  align-self: center;
+  margin-bottom: 0.5em;
+  color: #333;
+  width: 100%;
+  text-align: center;
+}
+
+.sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 250px;
+  background-color: #f0f0f0;
+  padding: 15px;
+  height: 95%;
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+}
+
+.sidebar.closed {
+  transform: translateX(-100%);
+}
+
+.menu-toggle {
+  position: absolute;
+  top: 10px;
+  right: -35px;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+  cursor: pointer;
+  z-index: 1010;
+  border-radius: 4px;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.map-and-sidebar {
+  position: relative;
+  height: 600px;
+  display: flex;
+}
+
+.sidebar h2,
+.sidebar .layer-controls {
+  transition: opacity 0.3s ease;
+}
+
+.sidebar.closed h2,
+.sidebar.closed .layer-controls {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Stiler for kompass-ikonet på kartet */
+#compass-icon {
+  position: absolute;
+  top: 405px; 
+  right: 10px;
+  width: 69px;
+  height: 69px;
+  z-index: 1000;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 2px;
+}
