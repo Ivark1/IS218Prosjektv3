@@ -116,9 +116,9 @@ block content
       if (toggleButton && sidebar) {
         toggleButton.addEventListener('click', () => {
           sidebar.classList.toggle('closed');
-          toggleButton.textContent = sidebar.classList.contains('closed') ? '⮞' : '⮜';
+          toggleButton.textContent = sidebar.classList.contains('closed') ? '▶' : '◀';
         });
 
-        toggleButton.textContent = sidebar.classList.contains('closed') ? '⮞' : '⮜';
+        toggleButton.textContent = sidebar.classList.contains('closed') ? '▶' : '◀';
       }
     });
