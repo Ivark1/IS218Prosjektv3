@@ -1,10 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the map
     const map = L.map('map').setView([58.65, 7.9], 8);
+    
+    // Add the base tile layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
     
-    const populationData = window.populationData;
+    // Initialize population data from global variable
+    const populationData = window.populationData ? JSON.parse(window.populationData) : null;
+    
+    // Calculate total population if data is available
     let totalPopulation = 0;
     if (populationData && populationData.features) {
       populationData.features.forEach(feature => {
@@ -12,8 +18,12 @@ document.addEventListener('DOMContentLoaded', function() {
           totalPopulation += parseInt(feature.properties.population, 10);
         }
       });
+      console.log(`Calculated total population: ${totalPopulation} from ${populationData.features.length} features`);
+    } else {
+      console.warn('No population data available or data is invalid');
     }
     
+    // Add an info control to display total population
     const info = L.control();
     info.onAdd = function() {
       const div = L.DomUtil.create('div', 'info');
@@ -25,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     info.addTo(map);
     
+    // Style function for the GeoJSON features
     function style(feature) {
       const population = feature.properties && feature.properties.population ?
         parseInt(feature.properties.population, 10) : 0;
@@ -50,15 +61,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectedAreaText = document.getElementById('selected-area');
     const predictionResults = document.getElementById('prediction-results');
     
+    // Add interactivity to each GeoJSON feature
     function onEachFeature(feature, layer) {
+      // Create popup content
       const popupContent = `
         <div class="popup-content">
           <h4>Befolkningsinformasjon</h4>
+          <p><strong>Område:</strong> ${feature.properties.name || 'Ukjent område'}</p>
           <p><strong>Befolkning:</strong> ${feature.properties.population.toLocaleString()} mennesker</p>
+          <p><strong>Grunnkretsnummer:</strong> ${feature.properties.grunnkretsnummer || 'Ukjent'}</p>
         </div>
       `;
       layer.bindPopup(popupContent);
       
+      // Add mouseover, mouseout, and click events
       layer.on({
         mouseover: function(e) {
           // Only highlight if this is not the selected layer
@@ -115,18 +131,28 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
     
-    proj4.defs('EPSG:25833', '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
-    const geoJsonLayer = L.geoJSON(populationData, {
-      style: style,
-      onEachFeature: onEachFeature,
-      coordsToLatLng: function(coords) {
-        const wgs84 = proj4('EPSG:25833', 'WGS84', coords);
-        return new L.LatLng(wgs84[1], wgs84[0]);
+    // Initialize the GeoJSON layer if data is available
+    let geoJsonLayer = null;
+    if (populationData && populationData.features && populationData.features.length > 0) {
+      console.log('Creating GeoJSON layer with population data');
+      
+      geoJsonLayer = L.geoJSON(populationData, {
+        style: style,
+        onEachFeature: onEachFeature
+      }).addTo(map);
+      
+      // Fit the map to the bounds of the GeoJSON layer
+      if (geoJsonLayer.getBounds().isValid()) {
+        map.fitBounds(geoJsonLayer.getBounds());
       }
-    }).addTo(map);
-    
-    if (geoJsonLayer.getBounds().isValid()) {
-      map.fitBounds(geoJsonLayer.getBounds());
+    } else {
+      console.error('No valid population data available for creating GeoJSON layer');
+      
+      // Show error message on the map
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'map-error';
+      errorDiv.textContent = 'Could not load population data. Please try refreshing the page.';
+      document.querySelector('.map-container').appendChild(errorDiv);
     }
     
     // Add event listener for prediction form submission
@@ -141,6 +167,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const year = document.getElementById('prediction-year').value;
         
+        // Show loading indicator
+        const submitButton = predictionForm.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.textContent;
+        submitButton.textContent = 'Loading...';
+        submitButton.disabled = true;
+        
         // Make AJAX request to get prediction
         fetch('/api/predict', {
           method: 'POST',
@@ -152,22 +184,38 @@ document.addEventListener('DOMContentLoaded', function() {
             year: parseInt(year)
           })
         })
-        .then(response => response.json())
-        .then(data => {
-          if (data.error) {
-            alert('Error: ' + data.error);
-            return;
+        .then(response => {
+          if (!response.ok) {
+            return response.json().then(err => {
+              throw new Error(err.message || err.error || 'Server error');
+            });
           }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Prediction data:', data);
           
           // Show prediction results
           document.getElementById('population-value').textContent = `Predicted population in ${year}: ${data.predictedPopulation.toLocaleString()}`;
-          document.getElementById('growth-value').textContent = `Predicted growth: ${data.predictedGrowth > 0 ? '+' : ''}${data.predictedGrowth.toLocaleString()} (${(data.growthPercentage).toFixed(2)}%)`;
           
+          // Format growth with + sign for positive values
+          const growthText = `${data.predictedGrowth > 0 ? '+' : ''}${data.predictedGrowth.toLocaleString()} (${data.growthPercentage.toFixed(2)}%)`;
+          document.getElementById('growth-value').textContent = `Predicted growth: ${growthText}`;
+          
+          // Show results section
           predictionResults.style.display = 'block';
+          
+          // Reset button
+          submitButton.textContent = originalButtonText;
+          submitButton.disabled = false;
         })
         .catch(error => {
           console.error('Error fetching prediction:', error);
-          alert('Error fetching prediction. Please try again.');
+          alert(`Error: ${error.message || 'Failed to fetch prediction. Please try again.'}`);
+          
+          // Reset button
+          submitButton.textContent = originalButtonText;
+          submitButton.disabled = false;
         });
       });
     }

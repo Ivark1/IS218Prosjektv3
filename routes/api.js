@@ -28,6 +28,7 @@ function predictPopulation(currentPopulation, year, baseYear = 2024) {
 // API endpoint for population predictions
 router.post('/predict', async (req, res) => {
     try {
+        console.log('Prediction endpoint called with data:', req.body);
         const { grunnkretsnummer, year } = req.body;
         
         if (!grunnkretsnummer || !year) {
@@ -37,21 +38,30 @@ router.post('/predict', async (req, res) => {
         // Fetch current population data for the area
         const { data, error } = await supabase
             .from('grunnkrets_populasjon_agder_2024')
-            .select('totalBefolkning')
+            .select('totalBefolkning, grunnkretsnummer, grunnkretsnavn')
             .eq('grunnkretsnummer', grunnkretsnummer)
             .single();
             
         if (error) {
             console.error('Error fetching population data:', error);
-            return res.status(500).json({ error: 'Database error' });
+            return res.status(500).json({ error: 'Database error', details: error.message });
         }
         
         if (!data) {
             return res.status(404).json({ error: 'Area not found' });
         }
         
+        console.log('Found area data:', data);
+        
         // Get current population
-        const currentPopulation = parseInt(data.totalBefolkning) || 0;
+        let currentPopulation;
+        if (typeof data.totalBefolkning === 'string') {
+            currentPopulation = parseInt(data.totalBefolkning.trim(), 10) || 0;
+        } else if (typeof data.totalBefolkning === 'number') {
+            currentPopulation = data.totalBefolkning;
+        } else {
+            currentPopulation = 0;
+        }
         
         // Check if population is less than 10
         if (currentPopulation < 10) {
@@ -62,12 +72,20 @@ router.post('/predict', async (req, res) => {
         }
         
         // Generate prediction
-        const prediction = predictPopulation(currentPopulation, year);
+        const prediction = predictPopulation(currentPopulation, parseInt(year));
+        
+        // Add area information to response
+        prediction.areaName = data.grunnkretsnavn || 'Unknown Area';
+        prediction.areaId = data.grunnkretsnummer;
+        prediction.currentPopulation = currentPopulation;
+        prediction.year = parseInt(year);
+        
+        console.log('Generated prediction:', prediction);
         
         res.json(prediction);
     } catch (err) {
         console.error('Prediction error:', err);
-        res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ error: 'Server error', details: err.message });
     }
 });
 
