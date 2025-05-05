@@ -1,0 +1,46 @@
+extends layout
+
+block content
+  div.content-container
+    div.title-container
+      h1 Befolkningskart
+      p Agder Fylke Befolkning
+
+    div.map-container
+      div#map
+
+    div.info-container
+      h3 Om dette kartet:
+      p Dette kartet viser befolkningstetthet i grunnkrets.
+      ul.density-list
+        li.density-item
+          span.density-indicator(style="background-color: #BD0026;")
+          | Veldig høy tetthet (2000+ mennesker)
+        li.density-item
+          span.density-indicator(style="background-color: #FC4E2A;")
+          | Høy tetthet (1000–2000 mennesker)
+        li.density-item
+          span.density-indicator(style="background-color: #FD8D3C;")
+          | Medium tetthet (500–1000 mennesker)
+        li.density-item
+          span.density-indicator(style="background-color: #FEB24C;")
+          | Liten tetthet (100–500 mennesker)
+        li.density-item
+          span.density-indicator(style="background-color: #FFEDA0;")
+          | Veldig liten tetthet (0–100 mennesker)
+
+    div.population-link-container
+      a.population-link(href="/")
+        span.back-arrow ←
+        | Tilbake til hovedside
+
+  script.
+    window.populationData = !{populationData};
+
+  script(
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  )
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4.js")
+  script(src="/js/population.js")
