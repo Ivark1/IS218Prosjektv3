@@ -218,3 +218,15 @@
   pointer-events: none;
 }
 
+/* Stiler for kompass-ikonet på kartet */
+#compass-icon {
+  position: absolute;
+  top: 405px; 
+  right: 10px;
+  width: 69px;
+  height: 69px;
+  z-index: 1000;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 2px;
+}
