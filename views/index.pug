@@ -92,6 +92,13 @@ block content
           li Klikk på en rute for å se befolkningsdetaljer.
           li Klikk på kartet for legge inn markør og se avstand til nærmeste tilfluktsrom.
 
+  //- Add the environment variables script BEFORE the data scripts
+  script.
+    //- Create a global ENV object to store environment variables
+    window.ENV = {
+      ORS_API_KEY: '#{orsApiKey}'  //- This will be replaced with the value from the server
+    };
+
   script.
     window.shelterData = !{shelterData || 'null'};
     window.bunkerData = !{bunkerData || 'null'};

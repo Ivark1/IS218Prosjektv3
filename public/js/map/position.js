@@ -159,7 +159,16 @@ function updateInfoPanel(content) {
 
 // Function to fetch isochrones from OpenRouteService
 async function fetchIsochronesFromORS(latlng, layer) {
-    const apiKey = '5b3ce3597851110001cf62483f619905b3674353b33c30db36554276'; // Replace with your actual key
+    // Get API key from the global ENV object set in the HTML/Pug template
+    // This assumes you've set window.ENV.ORS_API_KEY in your template
+    const apiKey = window.ENV && window.ENV.ORS_API_KEY;
+    
+    // Check if API key is available
+    if (!apiKey) {
+        console.error('ORS API key missing. Make sure you\'ve set window.ENV.ORS_API_KEY in your template.');
+        return false;
+    }
+    
     const minutes = [5, 10, 15]; // The time ranges we want
     
     // Define colors for different time ranges
