@@ -55,6 +55,19 @@ block content
       div.map-container(style="flex: 1; position: relative;")
         div#map
 
+
+      div#isochrone-legend.info-legend(style="position: absolute; bottom: 10px; left: 10px; z-index: 1000; background: rgba(255,255,255,0.8); padding: 6px 8px; border-radius: 5px; box-shadow: 0 0 15px rgba(0,0,0,0.2);")
+                div(style="margin-bottom: 3px;")
+                  span(style="background-color: #e6c3ff; width: 18px; height: 18px; display: inline-block; margin-right: 5px; vertical-align: middle; border: 1px solid #aaa;")
+                  | 5 minutters gangavstand
+                div(style="margin-bottom: 3px;")
+                  span(style="background-color: #b366ff; width: 18px; height: 18px; display: inline-block; margin-right: 5px; vertical-align: middle; border: 1px solid #aaa;")
+                  | 10 minutters gangavstand
+                div
+                  span(style="background-color: #9966cc; width: 18px; height: 18px; display: inline-block; margin-right: 5px; vertical-align: middle; border: 1px solid #aaa;")
+                  | 15 minutters gangavstand
+
+
       img(
               src="/assets/icon-compass.svg",
               alt="Kompass",
