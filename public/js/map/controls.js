@@ -17,10 +17,10 @@ function createLocateControl(map, locationTracker, customMarkerHandler) {
             </button>
           </div>
         `;
-    
+
         // Prevent map clicks from propagating through the control
         L.DomEvent.disableClickPropagation(div);
-    
+
         return div;
     };
 
@@ -34,22 +34,27 @@ function createLocateControl(map, locationTracker, customMarkerHandler) {
 
     zoomControl.onAdd = function () {
         const div = L.DomUtil.create('div', 'zoom-level-control');
-        div.style.backgroundColor = 'white';
-        div.style.padding = '4px 8px';
-        div.style.borderRadius = '4px';
-        div.style.boxShadow = '0 1px 4px rgba(0,0,0,0.2)';
-        div.style.fontSize = '14px';
-        div.innerHTML = `Zoom: ${map.getZoom()}`;
+        div.innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="padding: 10px; background: white; border: 1px solid #ccc; border-radius: 4px; display: flex; align-items: center;">
+              <span style="font-size: 16px; line-height: 10px;">Zoom: ${map.getZoom()}</span>
+            </div>
+          </div>
+        `;
 
         map.on('zoomend', () => {
-            div.innerHTML = `Zoom: ${map.getZoom()}`;
+            const span = div.querySelector('span');
+            if (span) span.textContent = `Zoom: ${map.getZoom()}`;
         });
+
+        // Prevent map clicks from propagating through the control
+        L.DomEvent.disableClickPropagation(div);
 
         return div;
     };
 
     zoomControl.addTo(map);
-    
+
     // Add event listener for locate button
     setTimeout(() => {
         document.getElementById('locate-button').addEventListener('click', function () {
@@ -111,7 +116,7 @@ function setupLayerControls(map, layers) {
             } else {
                 map.removeLayer(layers.routeLayer);
             }
-        });    
+        });
 
         if (document.getElementById('isochrone-checkbox')) {
             document.getElementById('isochrone-checkbox').addEventListener('change', function (e) {
@@ -123,6 +128,6 @@ function setupLayerControls(map, layers) {
             });
         }
     }, 200);
-}            
+}
 
 export { createLocateControl, setupLayerControls };
