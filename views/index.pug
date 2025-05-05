@@ -34,7 +34,7 @@ block content
               img(src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png", alt="Valgt posisjon", style="width: 12px; height: 20px; vertical-align: middle; margin-left: 4px;")
           div.layer-control-item(style="display: flex; align-items: center; justify-content: flex-start; width: 100%; padding: 0.5em 0.8em; background-color: white; border: 2px solid #bbcad5; border-radius: 4px; box-sizing: border-box;")
             input(type="checkbox", id="route-checkbox", checked)
-            label(for="route-checkbox") Ruter (Blå/Rød)
+            label(for="route-checkbox") Tilfluktsromrute
           div.layer-control-item(style="display: flex; align-items: center; justify-content: flex-start; width: 100%; padding: 0.5em 0.8em; background-color: white; border: 2px solid #bbcad5; border-radius: 4px; box-sizing: border-box;")
             input(type="checkbox", id="population-checkbox")
             label(for="population-checkbox") Befolkning
@@ -47,6 +47,11 @@ block content
       // Kartet
       div.map-container(style="flex: 1; position: relative;")
         div#map
+
+    // Position info panel - Added here
+    div.position-info-container(style="margin-top: 20px; padding: 15px; background-color: #f5f5f5; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);")
+      h3(style="margin-bottom: 10px; color: #333;") Valgt Posisjon
+      div#position-info(style="background-color: white; padding: 15px; border-radius: 6px; color: #333;") Klikk på kartet for å velge en posisjon og se informasjon her.
 
     div.analysis-container(style="margin-top: 20px; padding: 15px; background-color: #f5f5f5; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);")
       h3(style="margin-bottom: 10px;") Befolkning og Kapasitetsanalyse
@@ -99,15 +104,15 @@ block content
   // Toggle sidebar
   script.
     document.addEventListener('DOMContentLoaded', function () {
-    const toggleButton = document.querySelector('.menu-toggle');
-    const sidebar = document.getElementById('sidebar');
+      const toggleButton = document.querySelector('.menu-toggle');
+      const sidebar = document.getElementById('sidebar');
 
-    if (toggleButton && sidebar) {
-    toggleButton.addEventListener('click', () => {
-    sidebar.classList.toggle('closed');
-    toggleButton.textContent = sidebar.classList.contains('closed') ? '➤' : '◀';
-    });
+      if (toggleButton && sidebar) {
+        toggleButton.addEventListener('click', () => {
+          sidebar.classList.toggle('closed');
+          toggleButton.textContent = sidebar.classList.contains('closed') ? '⮞' : '⮜';
+        });
 
-    toggleButton.textContent = sidebar.classList.contains('closed') ? '➤' : '◀';
-    }
+        toggleButton.textContent = sidebar.classList.contains('closed') ? '⮞' : '⮜';
+      }
     });

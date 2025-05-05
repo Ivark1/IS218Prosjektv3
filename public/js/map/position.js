@@ -36,13 +36,13 @@ function setupLocationTracking(map, positionLayer, shelterLayer, bunkerLayer, ro
         // Find closest bunker with route
         const closestBunker = findClosestMarkerWithRoute(e.latlng, bunkerLayer, routeLayer, 'red');
 
-        // Create information popup
-        let popupContent = `<b>Din posisjon</b><br>Nøyaktighet: ${radius.toFixed(1)} meter<br><br>`;
+        // Create information content
+        let infoContent = `<b>Din posisjon</b><br>Nøyaktighet: ${radius.toFixed(1)} meter<br><br>`;
 
         if (closestShelter.marker) {
-            popupContent += `<b>Nærmeste Alternative Tilfluktsrom:</b> ${Math.round(closestShelter.distance)} meter<br>`;
+            infoContent += `<b>Nærmeste Alternative Tilfluktsrom:</b> ${Math.round(closestShelter.distance)} meter<br>`;
         } else {
-            popupContent += `<b>Ingen Alternative Tilfluktsrom funnet</b><br>`;
+            infoContent += `<b>Ingen Alternative Tilfluktsrom funnet</b><br>`;
         }
 
         if (closestBunker.marker) {
@@ -54,15 +54,16 @@ function setupLocationTracking(map, positionLayer, shelterLayer, bunkerLayer, ro
                 bunkerDetails = popupElement.textContent.trim().replace(/\n\s+/g, ', ');
             }
 
-            popupContent += `<b>Nærmeste Tilfluktsrom:</b> ${Math.round(closestBunker.distance)} meter`;
+            infoContent += `<b>Nærmeste Tilfluktsrom:</b> ${Math.round(closestBunker.distance)} meter`;
             if (bunkerDetails) {
-                popupContent += `<br><small>${bunkerDetails}</small>`;
+                infoContent += `<br><small>${bunkerDetails}</small>`;
             }
         } else {
-            popupContent += `<b>Ingen Tilfluktsrom funnet</b>`;
+            infoContent += `<b>Ingen Tilfluktsrom funnet</b>`;
         }
 
-        positionMarker.bindPopup(popupContent).openPopup();
+        // Update info panel instead of showing popup
+        updateInfoPanel(infoContent);
 
         // Add accuracy circle
         L.circle(e.latlng, {
@@ -123,6 +124,20 @@ function setupLocationTracking(map, positionLayer, shelterLayer, bunkerLayer, ro
     };
 }
 
+// Function to update the information panel
+function updateInfoPanel(content) {
+    const infoPanel = document.getElementById('position-info');
+    if (infoPanel) {
+        // Create a nicely formatted panel
+        let formattedContent = `
+            <div style="padding: 10px; background-color: white; border-radius: 4px; margin-bottom: 10px;">
+                ${content}
+            </div>
+        `;
+        infoPanel.innerHTML = formattedContent;
+    }
+}
+
 // Handle custom marker placement
 function setupCustomMarker(map, customLayer, shelterLayer, bunkerLayer, routeLayer, icons) {
     let customMarker = null;
@@ -152,7 +167,7 @@ function setupCustomMarker(map, customLayer, shelterLayer, bunkerLayer, routeLay
         const closestBunker = findClosestMarkerWithRoute(latlng, bunkerLayer, routeLayer, 'red');
 
         // Format distance display
-        let popupContent = `<b>Din valgte posisjon</b><br><br>`;
+        let infoContent = `<div style="margin-bottom: 10px;"><b>Din valgte posisjon</b></div>`;
         let distanceUnitBunker = 'm';
         let distanceUnitShelter = 'm';
         let distanceBunker, distanceShelter;
@@ -171,9 +186,7 @@ function setupCustomMarker(map, customLayer, shelterLayer, bunkerLayer, routeLay
             distanceShelter = Math.round(closestShelter.distance);
         }
 
-        // Build popup content
-        popupContent = '';
-
+        // Build info content
         if (closestBunker.marker) {
             let bunkerDetails = '';
             if (closestBunker.marker._popup) {
@@ -182,22 +195,22 @@ function setupCustomMarker(map, customLayer, shelterLayer, bunkerLayer, routeLay
                 bunkerDetails = popupElement.textContent.trim().replace(/\n\s+/g, ', ');
             }
 
-            popupContent += `<b>Nærmeste Tilfluktsrom:</b> ${distanceBunker} ${distanceUnitBunker}`;
+            infoContent += `<div style="margin-bottom: 5px;"><b>Nærmeste Tilfluktsrom:</b> ${distanceBunker} ${distanceUnitBunker}</div>`;
             if (bunkerDetails) {
-                popupContent += `<br><small>${bunkerDetails}</small>`;
+                infoContent += `<div style="font-size: 0.9em; margin-bottom: 10px;">${bunkerDetails}</div>`;
             }
-            popupContent += `<br>`;
         } else {
-            popupContent += `<b>Ingen Tilfluktsrom funnet</b><br>`;
+            infoContent += `<div style="margin-bottom: 10px;"><b>Ingen Tilfluktsrom funnet</b></div>`;
         }
 
         if (closestShelter.marker) {
-            popupContent += `<b>Nærmeste Alternative Tilfluktsrom:</b> ${distanceShelter} ${distanceUnitShelter}<br>`;
+            infoContent += `<div><b>Nærmeste Alternative Tilfluktsrom:</b> ${distanceShelter} ${distanceUnitShelter}</div>`;
         } else {
-            popupContent += `<b>Ingen Alternative Tilfluktsrom funnet</b><br>`;
+            infoContent += `<div><b>Ingen Alternative Tilfluktsrom funnet</b></div>`;
         }
 
-        customMarker.bindPopup(popupContent).openPopup();
+        // Update info panel instead of showing popup
+        updateInfoPanel(infoContent);
 
         // Update distances and routes when marker is dragged
         customMarker.on('dragend', function (event) {
@@ -243,9 +256,15 @@ function setupCustomMarker(map, customLayer, shelterLayer, bunkerLayer, routeLay
             if (customMarker) {
                 customLayer.clearLayers();
                 customMarker = null;
+                
+                // Clear the info panel
+                const infoPanel = document.getElementById('position-info');
+                if (infoPanel) {
+                    infoPanel.innerHTML = 'Klikk på kartet for å velge en posisjon og se informasjon her.';
+                }
             }
         }
     };
 }
 
-export { setupLocationTracking, setupCustomMarker };
+export { setupLocationTracking, setupCustomMarker, updateInfoPanel };
