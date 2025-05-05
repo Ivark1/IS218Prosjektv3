@@ -1,16 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize map
     const map = L.map('map').setView([58.65, 7.9], 8);
 
-    // Add base map
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Get population data
     const populationData = window.populationData;
     
-    // Calculate total population
     let totalPopulation = 0;
     if (populationData && populationData.features) {
         populationData.features.forEach(feature => {
@@ -20,7 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Add total population info
     const info = L.control();
     info.onAdd = function() {
         const div = L.DomUtil.create('div', 'info');
@@ -32,7 +27,6 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     info.addTo(map);
 
-    // Style function 
     function style(feature) {
         const population = feature.properties && feature.properties.population ? 
                          parseInt(feature.properties.population, 10) : 0;
@@ -52,9 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
-    // Add interaction handlers for each feature
     function onEachFeature(feature, layer) {
-        // Create popup content showing the population
         const popupContent = `
             <div class="popup-content">
                 <h4>Population Information</h4>
@@ -62,12 +54,9 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
         
-        // Bind popup to the layer
         layer.bindPopup(popupContent);
         
-        // Add hover effects
         layer.on({
-            // Highlight when mouseover
             mouseover: function(e) {
                 const layer = e.target;
                 layer.setStyle({
@@ -77,33 +66,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 layer.bringToFront();
             },
-            // Reset when mouseout
             mouseout: function(e) {
                 geoJsonLayer.resetStyle(e.target);
             },
-            // Zoom to area when clicked
             click: function(e) {
                 map.fitBounds(e.target.getBounds());
             }
         });
     }
 
-    // Define the UTM Zone 33N projection (most common for Norway)
     proj4.defs('EPSG:25833', '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
     
-    // Add GeoJSON layer with UTM to WGS84 conversion
     const geoJsonLayer = L.geoJSON(populationData, {
         style: style,
         onEachFeature: onEachFeature,
         coordsToLatLng: function(coords) {
-            // Convert from UTM to WGS84
             const wgs84 = proj4('EPSG:25833', 'WGS84', coords);
-            // Return as LatLng object (note the order: [lat, lng])
             return new L.LatLng(wgs84[1], wgs84[0]);
         }
     }).addTo(map);
     
-    // Fit map to bounds of features
     if (geoJsonLayer.getBounds().isValid()) {
         map.fitBounds(geoJsonLayer.getBounds());
     }
