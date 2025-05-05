@@ -8,8 +8,139 @@ import { calculateRoute, drawRoute } from './routing.js';
 
 // Handle user geolocation success
 function setupLocationTracking(map, positionLayer, shelterLayer, bunkerLayer, routeLayer, icons) {
-    // Your existing setupLocationTracking function code
-    // No changes needed here
+    let positionMarker = null;
+
+    // Function to handle geolocation success
+    function onLocationFound(e) {
+        const radius = e.accuracy / 2;
+
+        // Clear previous marker and circles
+        if (positionMarker) {
+            positionLayer.removeLayer(positionMarker);
+        }
+
+        positionLayer.eachLayer(layer => {
+            if (layer instanceof L.Circle) {
+                positionLayer.removeLayer(layer);
+            }
+        });
+
+        // Add new position marker
+        positionMarker = L.marker(e.latlng, {
+            icon: icons.greenIcon
+        }).addTo(positionLayer);
+
+        // Find closest shelter with route
+        const closestShelter = findClosestMarkerWithRoute(e.latlng, shelterLayer, routeLayer, 'blue');
+
+        // Find closest bunker with route
+        const closestBunker = findClosestMarkerWithRoute(e.latlng, bunkerLayer, routeLayer, 'red');
+
+        // Create information content
+        let infoContent = `<div style="margin-bottom: 10px;"><b>Din posisjon</b><br>Nøyaktighet: ${radius.toFixed(1)} meter</div>`;
+
+        if (closestShelter.marker) {
+            let distanceText = Math.round(closestShelter.distance);
+            let unit = 'm';
+            
+            if (closestShelter.distance >= 1000) {
+                distanceText = (closestShelter.distance / 1000).toFixed(1);
+                unit = 'km';
+            }
+            
+            infoContent += `<div style="margin-bottom: 5px;"><b>Nærmeste Alternative Tilfluktsrom:</b> ${distanceText} ${unit}</div>`;
+        } else {
+            infoContent += `<div style="margin-bottom: 10px;"><b>Ingen Alternative Tilfluktsrom funnet</b></div>`;
+        }
+
+        if (closestBunker.marker) {
+            let distanceText = Math.round(closestBunker.distance);
+            let unit = 'm';
+            
+            if (closestBunker.distance >= 1000) {
+                distanceText = (closestBunker.distance / 1000).toFixed(1);
+                unit = 'km';
+            }
+            
+            // Get the bunker details from the popup content
+            let bunkerDetails = '';
+            if (closestBunker.marker._popup) {
+                const popupElement = document.createElement('div');
+                popupElement.innerHTML = closestBunker.marker._popup._content;
+                bunkerDetails = popupElement.textContent.trim().replace(/\n\s+/g, ', ');
+            }
+
+            infoContent += `<div style="margin-bottom: 5px;"><b>Nærmeste Tilfluktsrom:</b> ${distanceText} ${unit}</div>`;
+            if (bunkerDetails) {
+                infoContent += `<div style="font-size: 0.9em; margin-bottom: 10px;">${bunkerDetails}</div>`;
+            }
+        } else {
+            infoContent += `<div style="margin-bottom: 10px;"><b>Ingen Tilfluktsrom funnet</b></div>`;
+        }
+
+        // Update info panel instead of showing popup
+        updateInfoPanel(infoContent);
+
+        // Add accuracy circle
+        L.circle(e.latlng, {
+            radius: radius,
+            color: 'green',
+            fillColor: '#3f9',
+            fillOpacity: 0.2
+        }).addTo(positionLayer);
+
+        // Center map on position
+        map.setView(e.latlng, map.getZoom());
+    }
+
+    // Function to handle geolocation errors
+    function onLocationError(e) {
+        console.error("Geolocation error:", e);
+        alert("Kunne ikke finne din posisjon: " + e.message);
+    }
+
+    // Find closest marker and calculate route
+    function findClosestMarkerWithRoute(position, layerGroup, routeLayerGroup, routeColor) {
+        // First find the closest marker
+        const result = findClosestMarker(position, layerGroup);
+
+        // Then calculate route if a marker was found
+        if (result.marker) {
+            calculateRoute(position, result.marker.getLatLng())
+                .then(geometry => {
+                    // Clear previous routes of this color
+                    routeLayerGroup.eachLayer(layer => {
+                        if (layer.options && layer.options.style && layer.options.style.color === routeColor) {
+                            routeLayerGroup.removeLayer(layer);
+                        }
+                    });
+
+                    // Draw the new route
+                    drawRoute(geometry, routeColor, routeLayerGroup);
+                })
+                .catch(error => {
+                    console.error('Error calculating route:', error);
+                });
+        }
+
+        return result;
+    }
+
+    // Set up event listeners for geolocation
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
+
+    // Return the location tracking controls
+    return {
+        locateUser: function () {
+            console.log("Locating user...");
+            map.locate({
+                setView: true,
+                maxZoom: 16,
+                enableHighAccuracy: true
+            });
+        }
+    };
 }
 
 // Function to update the information panel
@@ -28,7 +159,7 @@ function updateInfoPanel(content) {
 
 // Function to fetch isochrones from OpenRouteService
 async function fetchIsochronesFromORS(latlng, layer) {
-    const apiKey = 'DIN API NØKKEL'; // Replace with your actual key
+    const apiKey = '5b3ce3597851110001cf62483f619905b3674353b33c30db36554276'; // Replace with your actual key
     const minutes = [5, 10, 15]; // The time ranges we want
     
     // Define colors for different time ranges
@@ -298,5 +429,8 @@ function setupCustomMarker(map, customLayer, shelterLayer, bunkerLayer, routeLay
         }
     };
 }
+
+// Make updateInfoPanel available globally
+window.updateInfoPanel = updateInfoPanel;
 
 export { setupLocationTracking, setupCustomMarker, fetchIsochronesFromORS, createSimpleIsochrones, updateInfoPanel };
