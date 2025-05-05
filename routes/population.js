@@ -100,13 +100,13 @@ router.get('/', async function (req, res, next) {
                 const feature = {
                     type: 'Feature',
                     properties: {
-                        population: population
+                        population: population,
+                        grunnkretsnummer: item.grunnkretsnummer,
+                        name: item.grunnkretsnavn || ''
                     },
                     geometry: geometry
                 };
-                
                 features.push(feature);
-                successCount++;
             } catch (e) {
                 console.error(`Error processing item ${i}:`, e);
                 errorCount++;
@@ -142,6 +142,7 @@ router.get('/', async function (req, res, next) {
             populationData: 'null'
         });
         console.log('Error page rendered');
+        
     }
 });
 

@@ -9,6 +9,19 @@ block content
     div.map-container
       div#map
 
+    div.prediction-panel(style="display: none; margin-top: 20px; padding: 15px; background-color: #f5f5f5; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);")
+      h3 Population Growth Prediction
+      p#selected-area You've selected: No area selected
+      form#prediction-form
+        div.form-group(style="margin-bottom: 10px;")
+          label(for="prediction-year") Predict population for year:
+          input#prediction-year(type="number", min="2025", max="2050", value="2025", style="margin-left: 10px; padding: 5px;")
+        button#predict-button(type="submit", style="padding: 8px 15px; background-color: #4a89dc; color: white; border: none; border-radius: 4px; cursor: pointer;") Get Prediction
+      div#prediction-results(style="margin-top: 15px; display: none;")
+        h4 Results:
+        p#population-value
+        p#growth-value
+
     div.info-container
       h3 Om dette kartet:
       p Dette kartet viser befolkningstetthet i grunnkrets.

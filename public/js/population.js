@@ -42,8 +42,13 @@ document.addEventListener('DOMContentLoaded', function() {
       };
     }
     
-    // Track the currently selected layer
+    // Track the currently selected layer and feature
     let selectedLayer = null;
+    let selectedFeature = null;
+    const predictionPanel = document.querySelector('.prediction-panel');
+    const predictionForm = document.getElementById('prediction-form');
+    const selectedAreaText = document.getElementById('selected-area');
+    const predictionResults = document.getElementById('prediction-results');
     
     function onEachFeature(feature, layer) {
       const popupContent = `
@@ -81,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
           
           // Set this as the new selected layer
           selectedLayer = e.target;
+          selectedFeature = feature;
           
           // Apply bold border style
           selectedLayer.setStyle({
@@ -92,8 +98,19 @@ document.addEventListener('DOMContentLoaded', function() {
           // Bring to front
           selectedLayer.bringToFront();
           
-          // Open popup but don't zoom
+          // Open popup
           layer.openPopup();
+          
+          // Show prediction panel and update selected area text
+          if (predictionPanel) {
+            predictionPanel.style.display = 'block';
+            selectedAreaText.textContent = `You've selected: ${feature.properties.name || 'Area'} (Current population: ${feature.properties.population.toLocaleString()})`;
+            
+            // Hide previous prediction results if any
+            if (predictionResults) {
+              predictionResults.style.display = 'none';
+            }
+          }
         }
       });
     }
@@ -111,4 +128,47 @@ document.addEventListener('DOMContentLoaded', function() {
     if (geoJsonLayer.getBounds().isValid()) {
       map.fitBounds(geoJsonLayer.getBounds());
     }
-  });
+    
+    // Add event listener for prediction form submission
+    if (predictionForm) {
+      predictionForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!selectedFeature) {
+          alert('Please select an area on the map first.');
+          return;
+        }
+        
+        const year = document.getElementById('prediction-year').value;
+        
+        // Make AJAX request to get prediction
+        fetch('/api/predict', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            grunnkretsnummer: selectedFeature.properties.grunnkretsnummer || '0000',
+            year: parseInt(year)
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            alert('Error: ' + data.error);
+            return;
+          }
+          
+          // Show prediction results
+          document.getElementById('population-value').textContent = `Predicted population in ${year}: ${data.predictedPopulation.toLocaleString()}`;
+          document.getElementById('growth-value').textContent = `Predicted growth: ${data.predictedGrowth > 0 ? '+' : ''}${data.predictedGrowth.toLocaleString()} (${(data.growthPercentage).toFixed(2)}%)`;
+          
+          predictionResults.style.display = 'block';
+        })
+        .catch(error => {
+          console.error('Error fetching prediction:', error);
+          alert('Error fetching prediction. Please try again.');
+        });
+      });
+    }
+});
