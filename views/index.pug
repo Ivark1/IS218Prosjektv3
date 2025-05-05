@@ -2,8 +2,15 @@ extends layout
 
 block content
   div.content-container
-    div.title-container(style="margin-bottom: 20px; text-align: center;")
-      h1 Beredskapskart
+    div.title-container(style="margin-bottom: 0px; text-align: center;")
+      svg(width="400", height="100", viewBox="0 0 400 100", xmlns="http://www.w3.org/2000/svg")
+        defs
+          linearGradient#gradient(x1="0%", y1="0%", x2="100%", y2="100%")
+            stop(offset="0%", stop-color="#4a89dc")
+            stop(offset="100%", stop-color="#8e44ad")
+        rect(width="100%", height="100%", fill="white")
+        text(x="50%", y="50%", dominant-baseline="middle", text-anchor="middle", font-family="Segoe UI, Roboto, sans-serif", font-size="48", fill="url(#gradient)")
+          | Beredskapskart
 
     // Kart og sidebar i felles container
     div.map-and-sidebar(style="display: flex; height: 600px;")
