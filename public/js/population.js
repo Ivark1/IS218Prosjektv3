@@ -29,16 +29,16 @@ document.addEventListener('DOMContentLoaded', function() {
       const population = feature.properties && feature.properties.population ?
         parseInt(feature.properties.population, 10) : 0;
       const color =
-        population > 2000 ? '#BD0026' :
-        population > 1000 ? '#FC4E2A' :
-        population > 500 ? '#FD8D3C' :
-        population > 100 ? '#FEB24C' : '#FFEDA0';
+        population > 1000 ? '#BD0026' :
+        population > 500 ? '#FC4E2A' :
+        population > 100 ? '#FD8D3C' :
+        population > 10 ? '#FEB24C' : '#FFEDA0';
       return {
         fillColor: color,
         weight: 1,
         opacity: 0.5,
         color: '#666',
-        fillOpacity: 0.5
+        fillOpacity: 0.25
       };
     }
     
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
             layer.setStyle({
               weight: 3,
               color: '#333',
-              fillOpacity: 0.9
+              fillOpacity: 0.4
             });
             layer.bringToFront();
           }
