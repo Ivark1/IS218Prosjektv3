@@ -3,36 +3,36 @@ extends layout
 block content
   div.content-container
     div.title-container
-      h1 Population Map
-      p Agder County Population Visualization
+      h1 Befolkningskart
+      p Agder Fylke Befolkning
 
     div.map-container
       div#map
 
     div.info-container
-      h3 About This Map
-      p This map shows population distribution across Agder county.
+      h3 Om dette kartet:
+      p Dette kartet viser befolkningstetthet i grunnkrets.
       ul.density-list
         li.density-item
           span.density-indicator(style="background-color: #BD0026;")
-          | Very high density (2000+ people)
+          | Veldig høy tetthet (2000+ mennesker)
         li.density-item
           span.density-indicator(style="background-color: #FC4E2A;")
-          | High density (1000–2000 people)
+          | Høy tetthet (1000–2000 mennesker)
         li.density-item
           span.density-indicator(style="background-color: #FD8D3C;")
-          | Medium density (500–1000 people)
+          | Medium tetthet (500–1000 mennesker)
         li.density-item
           span.density-indicator(style="background-color: #FEB24C;")
-          | Low-medium density (100–500 people)
+          | Liten tetthet (100–500 mennesker)
         li.density-item
           span.density-indicator(style="background-color: #FFEDA0;")
-          | Low density (0–100 people)
+          | Veldig liten tetthet (0–100 mennesker)
 
     div.population-link-container
       a.population-link(href="/")
         span.back-arrow ←
-        | Back to main page
+        | Tilbake til hovedside
 
   script.
     window.populationData = !{populationData};

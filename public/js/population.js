@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const info = L.control();
     info.onAdd = function() {
         const div = L.DomUtil.create('div', 'info');
-        div.innerHTML = `<h4>Total Population</h4><b>${totalPopulation.toLocaleString()}</b>`;
+        div.innerHTML = `<h4>Total Befolkning</h4><b>${totalPopulation.toLocaleString()}</b>`;
         div.style.background = 'white';
         div.style.padding = '10px';
         div.style.borderRadius = '5px';
@@ -49,8 +49,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function onEachFeature(feature, layer) {
         const popupContent = `
             <div class="popup-content">
-                <h4>Population Information</h4>
-                <p><strong>Population:</strong> ${feature.properties.population.toLocaleString()} people</p>
+                <h4>Befolkningsinformasjon</h4>
+                <p><strong>Befolkning:</strong> ${feature.properties.population.toLocaleString()} mennesker</p>
             </div>
         `;
         
