@@ -16,7 +16,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
  */
 class PopulationDataService {
     constructor() {
-        this.tableName = 'befolkning_agder'; // Assuming this is the table name in Supabase
+        this.tableName = 'populasjon_grunkrets_agder_2024'; // Assuming this is the table name in Supabase
         this.requiredFeatures = []; // Will be loaded from model_features.csv
     }
 
