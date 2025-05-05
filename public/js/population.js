@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
           selectedLayer.setStyle({
             weight: 3,
             color: '#333',
-            fillOpacity: 0.9
+            fillOpacity: 0.7
           });
           
           // Bring to front
