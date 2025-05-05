@@ -1,0 +1,46 @@
+extends layout
+block content
+  div.content-container
+    div.title-container
+      h1 Population Map
+      p Agder County Population Visualization
+    
+    div.map-container
+      div#map
+    
+    div.info-container
+      h3 About This Map
+      p This map shows population distribution across Agder county. Each colored area represents a different population density.
+      ul.density-list
+        li.density-item
+          span.density-indicator(style="background-color: #BD0026;")
+          | Very high density (2000+ people)
+        li.density-item
+          span.density-indicator(style="background-color: #FC4E2A;")
+          | High density (1000-2000 people)
+        li.density-item
+          span.density-indicator(style="background-color: #FD8D3C;")
+          | Medium density (500-1000 people)
+        li.density-item
+          span.density-indicator(style="background-color: #FEB24C;")
+          | Low-medium density (100-500 people)
+        li.density-item
+          span.density-indicator(style="background-color: #FFEDA0;")
+          | Low density (0-100 people)
+    
+    div.population-link-container
+      a.population-link(href="/")
+        span.back-arrow ←
+        | Tilbake til hovedsiden
+
+  script.
+    // Any data needed for the page can be passed here from the server
+    window.populationData = !{populationData || 'null'};
+  
+  script(
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  )
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4.js")
+  script(src='/js/population.js')
