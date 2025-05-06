@@ -28,11 +28,41 @@ block content
         li.density-item
           span.density-indicator(style="background-color: #FFEDA0;")
           | Veldig liten tetthet (0–10 mennesker)
+        div.prediction-container
+      h3 Population Prediction
+      div.prediction-form
+        div.input-group
+          label(for="prediction-year") Prediction Year:
+          input#prediction-year(type="number", min="2025", max="2050", value="2030", step="1")
+        
+        button#run-prediction-btn.prediction-button Run Prediction
+      
+      div#prediction-results.prediction-results(style="display: none;")
+        h4 Prediction Results
+        div.results-header Selected Area:
+          span#selected-area-name &nbsp;
+        
+        div.results-content
+          div.result-item
+            span.result-label Current Population (2024):
+            span#current-population.result-value -
+          
+          div.result-item
+            span.result-label Predicted Population:
+            span#predicted-population.result-value -
+          
+          div.result-item
+            span.result-label Population Change:
+            span#population-change.result-value -
+          
+          div.result-item
+            span.result-label Growth Rate:
+            span#growth-rate.result-value -
 
-    div.population-link-container
-      a.population-link(href="/")
-        span.back-arrow ←
-        | Tilbake til hovedside
+        div.population-link-container
+          a.population-link(href="/")
+            span.back-arrow ←
+            | Tilbake til hovedside
 
   script.
     window.populationData = !{populationData};
@@ -44,3 +74,5 @@ block content
   )
   script(src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4.js")
   script(src="/js/population.js")
+  script(src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js")
+  script(src="/js/prediction.js")
