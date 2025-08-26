@@ -1,14 +1,18 @@
-// Isochrones module (merged layers version)
-// Overlapping isochrones of the same time band are dissolved into a single layer.
+// Isochrones module (merged, non-overlapping rings)
+// Overlapping isochrones of the same time band are dissolved into 3 layers (5/10/15).
+// Bands are rendered as rings to avoid opacity stacking.
 
 const turf = window.turf;
 
-// Store raw data and shelter-visible state
+// Raw data
 let allIsochroneData = [];
-// Maps shelter ID -> [{ minutes, feature }] so we can remove them later
+
+// Tracks which shelters are currently toggled ON
+// shelterId -> [{ minutes, feature }]
 let visibleIsochrones = new Map();
 
-// One merged layer per time band: minutes -> { feature: Feature|MultiPolygon, layer: L.GeoJSON }
+// One entry per time band:
+// minutes -> { union: Feature|MultiPolygon|null, parts: Feature[], layer: L.GeoJSON }
 let mergedByTime = new Map();
 
 // Colors per time band
@@ -18,14 +22,17 @@ const COLOR_BY_MIN = {
   15: '#F44336'
 };
 
-// Utils
+// --- Utils ---
+
 function toFeature(geometry, properties = {}) {
-  // Accepts {type, coordinates} or full Feature
   if (!geometry) return null;
-  if (geometry.type && geometry.coordinates && !geometry.properties) {
+  if (geometry.type === 'Feature') {
+    // merge properties
+    return { ...geometry, properties: { ...(geometry.properties || {}), ...properties } };
+  }
+  if (geometry.type && geometry.coordinates) {
     return { type: 'Feature', geometry, properties };
   }
-  if (geometry.type === 'Feature') return geometry;
   return null;
 }
 
@@ -44,35 +51,75 @@ function ensureMergedLayer(minutes, isochroneLayer) {
     }
   }).addTo(isochroneLayer);
 
-  const entry = { feature: null, layer };
+  // Optional: click info on band
+  layer.on('click', (e) => {
+    updateInfoPanel(`Gåavstand: ${minutes} minutter`);
+    L.DomEvent.stop(e);
+  });
+
+  const entry = { union: null, parts: [], layer };
   mergedByTime.set(minutes, entry);
   return entry;
 }
 
-function unionInto(minutes, feature, isochroneLayer) {
-  const entry = ensureMergedLayer(minutes, isochroneLayer);
-  entry.feature = entry.feature ? turf.union(entry.feature, feature) : feature;
-  // Refresh layer content
-  entry.layer.clearLayers();
-  if (entry.feature) entry.layer.addData(entry.feature);
-}
-
-function subtractFrom(minutes, feature) {
+function recomputeUnion(minutes) {
   const entry = mergedByTime.get(minutes);
-  if (!entry || !entry.feature) return;
-
-  const result = turf.difference(entry.feature, feature);
-  entry.feature = result || null;
-
-  entry.layer.clearLayers();
-  if (entry.feature) {
-    entry.layer.addData(entry.feature);
-  } else {
-    // nothing left for this time band
-    // keep empty layer so future unions reuse styling; or remove it if you prefer:
-    // entry.layer.remove(); mergedByTime.delete(minutes);
+  if (!entry) return;
+  let merged = null;
+  for (const f of entry.parts) {
+    merged = merged ? turf.union(merged, f) : f;
   }
+  entry.union = merged || null;
 }
+
+// Make rings non-overlapping: 5 = U5, 10 = U10 \ U5, 15 = U15 \ U10
+function updateRenderedBands() {
+  const e5 = mergedByTime.get(5);
+  const e10 = mergedByTime.get(10);
+  const e15 = mergedByTime.get(15);
+
+  const U5 = e5 ? e5.union : null;
+  const U10 = e10 ? e10.union : null;
+  const U15 = e15 ? e15.union : null;
+
+  const B5 = U5 ? U5 : null;
+  const B10 = (U10 && U5) ? turf.difference(U10, U5) : U10 ? U10 : null;
+  const B15 = (U15 && U10) ? turf.difference(U15, U10) : U15 ? U15 : null;
+
+  if (e5)  { e5.layer.clearLayers();  if (B5)  e5.layer.addData(B5); }
+  if (e10) { e10.layer.clearLayers(); if (B10) e10.layer.addData(B10); }
+  if (e15) { e15.layer.clearLayers(); if (B15) e15.layer.addData(B15); }
+}
+
+function unionInto(minutes, feature, isochroneLayer, shelterId) {
+  const entry = ensureMergedLayer(minutes, isochroneLayer);
+  // tag with shelter id so we can remove later
+  feature = JSON.parse(JSON.stringify(feature)); // shallow clone to avoid side-effects
+  if (!feature.properties) feature.properties = {};
+  feature.properties.__sid = shelterId;
+
+  entry.parts.push(feature);
+  recomputeUnion(minutes);
+  updateRenderedBands();
+}
+
+function subtractFrom(minutes, shelterIdOrFeature) {
+  const entry = mergedByTime.get(minutes);
+  if (!entry) return;
+
+  entry.parts = entry.parts.filter(f => {
+    if (typeof shelterIdOrFeature === 'string') {
+      return f.properties?.__sid !== shelterIdOrFeature;
+    }
+    // removing by feature reference
+    return f !== shelterIdOrFeature;
+  });
+
+  recomputeUnion(minutes);
+  updateRenderedBands();
+}
+
+// --- Public API ---
 
 // Initialize isochrone system
 function initializeIsochrones(isochroneData, isochroneLayer) {
@@ -89,7 +136,7 @@ function addIsochrones(isochroneData, isochroneLayer) {
   initializeIsochrones(isochroneData, isochroneLayer);
 }
 
-// Find closest group (unchanged logic apart from returning Features)
+// Setup click handling for shelters/bunkers ONLY
 function setupShelterIsochroneClick(shelterLayer, bunkerLayer, isochroneLayer) {
   if (!allIsochroneData || !allIsochroneData.length) {
     console.warn('No isochrone data available for shelter clicks');
@@ -109,7 +156,11 @@ function setupShelterIsochroneClick(shelterLayer, bunkerLayer, isochroneLayer) {
           geometry.coordinates[0].forEach(coord => {
             centerLng += coord[0]; centerLat += coord[1]; pointCount++;
           });
-        } else if (geometry.type === 'MultiPolygon' && geometry.coordinates[0] && geometry.coordinates[0][0]) {
+        } else if (
+          geometry.type === 'MultiPolygon' &&
+          geometry.coordinates[0] &&
+          geometry.coordinates[0][0]
+        ) {
           geometry.coordinates[0][0].forEach(coord => {
             centerLng += coord[0]; centerLat += coord[1]; pointCount++;
           });
@@ -158,7 +209,7 @@ function setupShelterIsochroneClick(shelterLayer, bunkerLayer, isochroneLayer) {
       });
       [5, 10, 15].forEach(t => bestByTime.has(t) && selected.push(bestByTime.get(t).data));
       if (selected.length < 3) {
-        const rest = Array.from(bestByTime.keys()).sort((a,b)=>a-b);
+        const rest = Array.from(bestByTime.keys()).sort((a, b) => a - b);
         for (const t of rest) {
           if (selected.length < 3 && !selected.find(s => s.aa_mins === t)) {
             selected.push(bestByTime.get(t).data);
@@ -167,7 +218,7 @@ function setupShelterIsochroneClick(shelterLayer, bunkerLayer, isochroneLayer) {
       }
     }
 
-    // Return as Features for downstream ops
+    // Convert to Features for downstream ops
     return selected
       .map(iso => {
         const f = toFeature(iso.GEOM || iso.geom, { aa_mins: iso.aa_mins });
@@ -180,39 +231,41 @@ function setupShelterIsochroneClick(shelterLayer, bunkerLayer, isochroneLayer) {
     const shelterLatLng = marker.getLatLng();
     const shelterId = `${Math.round(shelterLatLng.lat * 10000)}_${Math.round(shelterLatLng.lng * 10000)}`;
 
-    // Toggle OFF: subtract this shelter's features from merged layers
+    // Toggle OFF: remove this shelter's contributions from each time band
     if (visibleIsochrones.has(shelterId)) {
-      const entries = visibleIsochrones.get(shelterId);
-      entries.forEach(({ minutes, feature }) => subtractFrom(minutes, feature));
+      const entries = visibleIsochrones.get(shelterId); // [{ minutes, feature }]
+      // Remove by shelterId tag; minutes hint speeds things up
+      const minutesSet = new Set(entries.map(e => e.minutes));
+      [5, 10, 15].forEach(m => {
+        if (minutesSet.has(m)) subtractFrom(m, shelterId);
+      });
+
       visibleIsochrones.delete(shelterId);
       updateInfoPanel(`Isokroner skjult for ${shelterType}`);
       return;
     }
 
-    // Toggle ON: find features, union into merged layers, remember for later removal
+    // Toggle ON: find features, add to contributors, rebuild rings
     const selections = findClosestIsochroneGroup(shelterLatLng);
     if (!selections.length) {
       updateInfoPanel(`Ingen isokroner funnet for denne ${shelterType.toLowerCase()}`);
       return;
     }
 
-    // Union each time band into its merged layer
     selections
       .sort((a, b) => (b.minutes || 0) - (a.minutes || 0)) // 15,10,5
-      .forEach(({ minutes, feature }) => unionInto(minutes, feature, isochroneLayer));
+      .forEach(({ minutes, feature }) => unionInto(minutes, feature, isochroneLayer, shelterId));
 
-    // Remember what we added for this shelter so we can subtract later
     visibleIsochrones.set(shelterId, selections);
-
     updateInfoPanel(`Isokroner vist for ${shelterType} (${selections.length} tidssoner)`);
   }
 
-  // Attach click handlers (same as before)
+  // Attach click handlers to shelters
   if (shelterLayer) {
     shelterLayer.eachLayer(layer => {
       if (layer instanceof L.Marker) {
         layer.off('click');
-        layer.on('click', e => {
+        layer.on('click', (e) => {
           handleShelterClick(layer, 'alternativt tilfluktsrom');
           L.DomEvent.stop(e);
         });
@@ -220,11 +273,12 @@ function setupShelterIsochroneClick(shelterLayer, bunkerLayer, isochroneLayer) {
     });
   }
 
+  // Attach click handlers to bunkers
   if (bunkerLayer) {
     bunkerLayer.eachLayer(layer => {
       if (layer instanceof L.Marker) {
         layer.off('click');
-        layer.on('click', e => {
+        layer.on('click', (e) => {
           handleShelterClick(layer, 'offentlig tilfluktsrom');
           L.DomEvent.stop(e);
         });
@@ -232,23 +286,21 @@ function setupShelterIsochroneClick(shelterLayer, bunkerLayer, isochroneLayer) {
     });
   }
 
-  console.log('Shelter isochrone click handlers set up (merged layers)');
+  console.log('Shelter isochrone click handlers set up (merged non-overlapping bands)');
 }
 
+// Clear everything
 function clearAllIsochrones(isochroneLayer) {
-  // Clear merged layers
   mergedByTime.forEach(({ layer }) => {
     layer.clearLayers();
-    // Optionally remove from map: layer.remove();
+    // Optionally: layer.remove();
   });
   mergedByTime.clear();
-
-  // Clear shelter state
   visibleIsochrones.clear();
-
   updateInfoPanel('Alle isokroner fjernet');
 }
 
+// Info panel helper
 function updateInfoPanel(message) {
   const infoPanel = document.getElementById('position-info');
   if (infoPanel) {
@@ -258,11 +310,12 @@ function updateInfoPanel(message) {
   }
 }
 
-// Back-compat note
+// Legacy noop
 function setupIsochroneClickHandling(isochroneLayer, map) {
   console.log('Use setupShelterIsochroneClick (merged layers) instead of setupIsochroneClickHandling');
 }
 
+// Exports
 export {
   addIsochrones,
   initializeIsochrones,
