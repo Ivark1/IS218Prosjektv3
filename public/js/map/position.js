@@ -114,10 +114,8 @@ function setupLocationTracking(map, positionLayer, shelterLayer, bunkerLayer, ro
 function updateInfoPanel(content) {
     const infoPanel = document.getElementById('position-info');
     if (infoPanel) {
-        // Create a nicely formatted panel
-        let formattedContent = `
+        infoPanel.innerHTML = `
             <div style="padding: 10px; background-color: #cce2e8; border-radius: 4px; margin-bottom: 10px;">
-
                 ${content}
             </div>
         `;
