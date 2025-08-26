@@ -149,7 +149,7 @@ function updateInfoPanel(content) {
     if (infoPanel) {
         // Create a nicely formatted panel
         let formattedContent = `
-            <div style="padding: 10px; background-color: white; border-radius: 4px; margin-bottom: 10px;">
+            <div style="padding: 10px; background-color: #cce2e8; border-radius: 4px; margin-bottom: 10px;">
                 ${content}
             </div>
         `;

@@ -12,33 +12,33 @@ block content
         button.menu-toggle(type="button", style="position: absolute; top: 10px; right: 10px;") ☰
         h2(style="margin-top: 0; text-align: center;") Lagkontroller
         div.layer-controls(style="margin-top: 20px")
-          div.layer-control-item(style="display: flex; align-items: center; justify-content: flex-start; width: 100%; padding: 0.5em 0.8em; background-color: white; border: 2px solid #bbcad5; border-radius: 4px; box-sizing: border-box;")
+          div.layer-control-item(style="display: flex; align-items: center; justify-content: flex-start; width: 100%; padding: 0.5em 0.8em; background-color: #cce2e8; border: 2px solid #bbcad5; border-radius: 4px; box-sizing: border-box;")
             input(type="checkbox", id="shelter-checkbox", checked)
             label(for="shelter-checkbox")
               | Alternativt tilfluktsrom
               img(src="/assets/tent-7-svgrepo-com.svg", alt="Shelter", style="width: 20px; height: 20px; vertical-align: middle; margin-left: 4px;")
-          div.layer-control-item(style="display: flex; align-items: center; justify-content: flex-start; width: 100%; padding: 0.5em 0.8em; background-color: white; border: 2px solid #bbcad5; border-radius: 4px; box-sizing: border-box; ")
+          div.layer-control-item(style="display: flex; align-items: center; justify-content: flex-start; width: 100%; padding: 0.5em 0.8em; background-color: #cce2e8; border: 2px solid #bbcad5; border-radius: 4px; box-sizing: border-box; ")
             input(type="checkbox", id="bunker-checkbox", checked)
             label(for="bunker-checkbox")
               | Offentlig tilfluktsrom
               img(src="/assets/bunker-svgrepo-com-3.svg", alt="Tilfluktsrom", style="width: 20px; height: 20px; vertical-align: middle; margin-left: 4px;")
-          div.layer-control-item(style="display: flex; align-items: center; justify-content: flex-start; width: 100%; padding: 0.5em 0.8em; background-color: white; border: 2px solid #bbcad5; border-radius: 4px; box-sizing: border-box;")
+          div.layer-control-item(style="display: flex; align-items: center; justify-content: flex-start; width: 100%; padding: 0.5em 0.8em; background-color: #cce2e8; border: 2px solid #bbcad5; border-radius: 4px; box-sizing: border-box;")
             input(type="checkbox", id="position-checkbox", checked)
             label(for="position-checkbox")
               | Min posisjon
               img(src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png", alt="Min posisjon", style="width: 12px; height: 20px; vertical-align: middle; margin-left: 4px;")
-          div.layer-control-item(style="display: flex; align-items: center; justify-content: flex-start; width: 100%; padding: 0.5em 0.8em; background-color: white; border: 2px solid #bbcad5; border-radius: 4px; box-sizing: border-box;")
+          div.layer-control-item(style="display: flex; align-items: center; justify-content: flex-start; width: 100%; padding: 0.5em 0.8em; background-color: #cce2e8; border: 2px solid #bbcad5; border-radius: 4px; box-sizing: border-box;")
             input(type="checkbox", id="custom-checkbox", checked)
             label(for="custom-checkbox")
               | Valgt posisjon
               img(src="https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png", alt="Valgt posisjon", style="width: 12px; height: 20px; vertical-align: middle; margin-left: 4px;")
-          div.layer-control-item(style="display: flex; align-items: center; justify-content: flex-start; width: 100%; padding: 0.5em 0.8em; background-color: white; border: 2px solid #bbcad5; border-radius: 4px; box-sizing: border-box;")
+          div.layer-control-item(style="display: flex; align-items: center; justify-content: flex-start; width: 100%; padding: 0.5em 0.8em; background-color: #cce2e8; border: 2px solid #bbcad5; border-radius: 4px; box-sizing: border-box;")
             input(type="checkbox", id="route-checkbox", checked)
             label(for="route-checkbox") Tilfluktsromsrute
-          div.layer-control-item(style="display: flex; align-items: center; justify-content: flex-start; width: 100%; padding: 0.5em 0.8em; background-color: white; border: 2px solid #bbcad5; border-radius: 4px; box-sizing: border-box;")
+          div.layer-control-item(style="display: flex; align-items: center; justify-content: flex-start; width: 100%; padding: 0.5em 0.8em; background-color: #cce2e8; border: 2px solid #bbcad5; border-radius: 4px; box-sizing: border-box;")
             input(type="checkbox", id="population-checkbox")
             label(for="population-checkbox") Befolkning
-          div.layer-control-item(style="display: flex; align-items: center; justify-content: flex-start; width: 100%; padding: 0.5em 0.8em; background-color: white; border: 2px solid #bbcad5; border-radius: 4px; box-sizing: border-box;")
+          div.layer-control-item(style="display: flex; align-items: center; justify-content: flex-start; width: 100%; padding: 0.5em 0.8em; background-color: #cce2e8; border: 2px solid #bbcad5; border-radius: 4px; box-sizing: border-box;")
             input(type="checkbox", id="isochrone-checkbox")
             label(for="isochrone-checkbox")
               | Tilgjengelighet (Gåavstand)
@@ -55,25 +55,25 @@ block content
             )
 
     // Position info panel - Added here
-    div.position-info-container(style="margin-top: 20px; padding: 15px; background-color: #f5f5f5; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);")
-      h3(style="margin-bottom: 10px; color: #333;") Valgt Posisjon
-      div#position-info(style="background-color: white; padding: 15px; border-radius: 6px; color: #333;") Klikk på kartet for å velge en posisjon og se informasjon her.
+    div.position-info-container(style="margin-top: 20px; padding: 15px; background-color: #97bac2; border: #bbcad5 2px solid; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);")
+      h3(style="margin-bottom: 10px; color: #333;") Valgt <Posisjon></Posisjon>
+      div#position-info(style="background-color: #cce2e8; padding: 15px; border-radius: 6px; color: #333;") Klikk på kartet for å velge en posisjon og se informasjon her.
 
-    div.analysis-container(style="margin-top: 20px; padding: 15px; background-color: #f5f5f5; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);")
+    div.analysis-container(style="margin-top: 20px; padding: 15px; background-color: #97bac2; border: #bbcad5 2px solid; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);")
       h3(style="margin-bottom: 10px;") Befolkning og Kapasitetsanalyse
       p#analysis-info Tegn et område på kartet for å analysere befolkning og tilfluktsromkapasitet.
       div#analysis-results(style="display: none;")
         div(style="display: flex; justify-content: space-between; margin-top: 10px;")
-          div(style="flex: 1; padding: 10px; background-color: #e9f5ff; border-radius: 4px; margin-right: 10px;")
+          div(style="flex: 1; padding: 10px; background-color: #cce2e8; border-radius: 4px; margin-right: 10px;")
             h4 Befolkning
             p#population-count 0 personer
-          div(style="flex: 1; padding: 10px; background-color: #e9fff5; border-radius: 4px; margin-right: 10px;")
+          div(style="flex: 1; padding: 10px; background-color: #cce2e8; border-radius: 4px; margin-right: 10px;")
             h4 Tilfluktsromskapasitet
             p#shelter-capacity 0 plasser
-          div(style="flex: 1; padding: 10px; background-color: #fff9e9; border-radius: 4px;")
+          div(style="flex: 1; padding: 10px; background-color: #cce2e8; border-radius: 4px;")
             h4 Dekningsgrad
             p#coverage-percentage 0%
-      button#clear-analysis(style="margin-top: 15px; padding: 8px 15px; background-color: #f0f0f0; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;") Fjern analyse
+      button#clear-analysis(style="margin-top: 15px; padding: 8px 15px; background-color: #cce2e8; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;") Fjern analyse
 
     div.info-container
       div.left
@@ -93,7 +93,7 @@ block content
           li Klikk på kartet for legge inn markør og se avstand til nærmeste tilfluktsrom.
 
     div.population-link-container(style="margin-top: 20px; text-align: center;")
-      a.population-link(href="/population", style="display: inline-block; padding: 12px 24px; background-color: #4a89dc; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); transition: background-color 0.3s ease;") 
+      a.population-link(href="/population", style="display: inline-block; padding: 12px 24px; background-color: #d49044; color: black; text-decoration: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); transition: background-color 0.3s ease;") 
         | Se detaljert befolkningskart
         span(style="margin-left: 8px;") →
 
