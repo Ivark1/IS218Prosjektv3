@@ -10,7 +10,7 @@ function createLayers(map) {
     const positionLayer = L.layerGroup().addTo(map);
     const customLayer = L.layerGroup().addTo(map);
     const routeLayer = L.layerGroup().addTo(map);
-    const isochroneLayer = L.layerGroup().addTo(map);
+    const isochroneLayer = L.geoJSON(null, { renderer: L.canvas() }).addTo(map);
     const populationLayer = L.layerGroup().addTo(map);
     
     return {
