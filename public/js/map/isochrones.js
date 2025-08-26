@@ -4,9 +4,9 @@
  */
 
 export const ISOCHRONE_COLORS = {
-    5: '#FFFF00',
-    10: '#b366ff',
-    15: '#9966cc'
+    5: '#A2E05E',
+    10: '#5B9A4C',
+    15: '#2E6B5A'
 };
 
 function getMinutes(feature) {
