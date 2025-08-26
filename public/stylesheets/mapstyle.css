@@ -2,6 +2,7 @@
     width: auto;
     height: 600px;
     border-radius: 8px;
+    border: #bbcad5 2px solid;
   }
   
   #map {

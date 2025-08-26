@@ -15,5 +15,18 @@
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
     "pug": "2.0.0-beta11"
-  }
+  },
+  "description": "- [Problemstilling](#problemstilling) - [Målsetning](#målsetning) - [Teknologivalg](#teknologivalg) - [Datasettene](#datasettene) - [Metode og implementering](#metode_og_implementering) - [Mulig videre arbeid og utvidelser](#Mulig_videre_arbeid_og_utvidelser) - [Kildekode og brukerveiledning](#Kildekode_og_brukerveiledning) - [Konklusjon](#konklusjon) - [Kilder](#kilder)",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ivark1/IS218Prosjektv3.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ivark1/IS218Prosjektv3/issues"
+  },
+  "homepage": "https://github.com/Ivark1/IS218Prosjektv3#readme"
 }
