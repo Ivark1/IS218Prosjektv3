@@ -4,9 +4,9 @@
  */
 
 export const ISOCHRONE_COLORS = {
-    5: '#A2E05E',
-    10: '#5B9A4C',
-    15: '#2E6B5A'
+    5: '#2E7D32',
+    10: '#FFEB3B',
+    15: '#F44336'
 };
 
 function getMinutes(feature) {
@@ -95,7 +95,7 @@ export function addIsochrones(isochroneData, isochroneLayer) {
 
     //Gjør hele canvas-lerretet gjennomsiktig
     try {
-        isochroneLayer.getPane().style.opacity = 0.6; // Juster verdien mellom 0.0 og 1.0
+        isochroneLayer.getPane().style.opacity = 0.3; // Juster verdien mellom 0.0 og 1.0
         console.log("Vellykket: Viser isokroner uten overlapp ved hjelp av Canvas.");
     } catch (e) {
         console.error("Kunne ikke sette gjennomsiktighet på laget. Er laget lagt til på kartet?", e);
