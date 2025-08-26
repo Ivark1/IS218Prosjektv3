@@ -12,7 +12,8 @@ function createLayers(map) {
     const positionLayer = L.layerGroup().addTo(map);
     const customLayer = L.layerGroup().addTo(map);
     const routeLayer = L.layerGroup().addTo(map);
-    const isochroneLayer = L.layerGroup();
+    const canvasRenderer = L.canvas({ padding: 0.5 });
+    const isochroneLayer = L.geoJSON(null, { renderer: canvasRenderer });
 
     return {
         shelterLayer,
