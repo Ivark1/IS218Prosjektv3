@@ -10,7 +10,6 @@ import { calculateRoute, drawRoute } from './routing.js';
 function setupLocationTracking(map, positionLayer, shelterLayer, bunkerLayer, routeLayer, icons) {
     let positionMarker = null;
 
-    // Function to handle geolocation success
     function onLocationFound(e) {
         const radius = e.accuracy / 2;
 
@@ -18,7 +17,6 @@ function setupLocationTracking(map, positionLayer, shelterLayer, bunkerLayer, ro
         if (positionMarker) {
             positionLayer.removeLayer(positionMarker);
         }
-
         positionLayer.eachLayer(layer => {
             if (layer instanceof L.Circle) {
                 positionLayer.removeLayer(layer);
@@ -26,9 +24,7 @@ function setupLocationTracking(map, positionLayer, shelterLayer, bunkerLayer, ro
         });
 
         // Add new position marker
-        positionMarker = L.marker(e.latlng, {
-            icon: icons.greenIcon
-        }).addTo(positionLayer);
+        positionMarker = L.marker(e.latlng, { icon: icons.greenIcon }).addTo(positionLayer);
 
         // Find closest shelter with route
         const closestShelter = findClosestMarkerWithRoute(e.latlng, shelterLayer, routeLayer, 'blue');
@@ -36,41 +32,30 @@ function setupLocationTracking(map, positionLayer, shelterLayer, bunkerLayer, ro
         // Find closest bunker with route
         const closestBunker = findClosestMarkerWithRoute(e.latlng, bunkerLayer, routeLayer, 'red');
 
-        // Create information content
-        let infoContent = `<div style="margin-bottom: 10px;"><b>Din posisjon</b><br>Nøyaktighet: ${radius.toFixed(1)} meter</div>`;
+        // Info panel
+        const radiusText = radius.toFixed(1);
+        let infoContent = `<div style="margin-bottom: 10px;"><b>Din posisjon</b><br>Nøyaktighet: ${radiusText} meter</div>`;
 
         if (closestShelter.marker) {
-            let distanceText = Math.round(closestShelter.distance);
-            let unit = 'm';
-            
-            if (closestShelter.distance >= 1000) {
-                distanceText = (closestShelter.distance / 1000).toFixed(1);
-                unit = 'km';
-            }
-            
-            infoContent += `<div style="margin-bottom: 5px;"><b>Nærmeste Alternative Tilfluktsrom:</b> ${distanceText} ${unit}</div>`;
+            const d = closestShelter.distance;
+            const distanceText = d >= 1000 ? (d / 1000).toFixed(1) + ' km' : Math.round(d) + ' m';
+            infoContent += `<div style="margin-bottom: 5px;"><b>Nærmeste Alternative Tilfluktsrom:</b> ${distanceText}</div>`;
         } else {
             infoContent += `<div style="margin-bottom: 10px;"><b>Ingen Alternative Tilfluktsrom funnet</b></div>`;
         }
 
         if (closestBunker.marker) {
-            let distanceText = Math.round(closestBunker.distance);
-            let unit = 'm';
-            
-            if (closestBunker.distance >= 1000) {
-                distanceText = (closestBunker.distance / 1000).toFixed(1);
-                unit = 'km';
-            }
-            
-            // Get the bunker details from the popup content
+            const d = closestBunker.distance;
+            const distanceText = d >= 1000 ? (d / 1000).toFixed(1) + ' km' : Math.round(d) + ' m';
+
             let bunkerDetails = '';
             if (closestBunker.marker._popup) {
-                const popupElement = document.createElement('div');
-                popupElement.innerHTML = closestBunker.marker._popup._content;
-                bunkerDetails = popupElement.textContent.trim().replace(/\n\s+/g, ', ');
+                const div = document.createElement('div');
+                div.innerHTML = closestBunker.marker._popup._content;
+                bunkerDetails = div.textContent.trim().replace(/\n\s+/g, ', ');
             }
 
-            infoContent += `<div style="margin-bottom: 5px;"><b>Nærmeste Tilfluktsrom:</b> ${distanceText} ${unit}</div>`;
+            infoContent += `<div style="margin-bottom: 5px;"><b>Nærmeste Tilfluktsrom:</b> ${distanceText}</div>`;
             if (bunkerDetails) {
                 infoContent += `<div style="font-size: 0.9em; margin-bottom: 10px;">${bunkerDetails}</div>`;
             }
@@ -78,10 +63,9 @@ function setupLocationTracking(map, positionLayer, shelterLayer, bunkerLayer, ro
             infoContent += `<div style="margin-bottom: 10px;"><b>Ingen Tilfluktsrom funnet</b></div>`;
         }
 
-        // Update info panel instead of showing popup
         updateInfoPanel(infoContent);
 
-        // Add accuracy circle
+        // Accuracy circle
         L.circle(e.latlng, {
             radius: radius,
             color: 'green',
@@ -93,18 +77,13 @@ function setupLocationTracking(map, positionLayer, shelterLayer, bunkerLayer, ro
         map.setView(e.latlng, map.getZoom());
     }
 
-    // Function to handle geolocation errors
     function onLocationError(e) {
         console.error("Geolocation error:", e);
         alert("Kunne ikke finne din posisjon: " + e.message);
     }
 
-    // Find closest marker and calculate route
     function findClosestMarkerWithRoute(position, layerGroup, routeLayerGroup, routeColor) {
-        // First find the closest marker
         const result = findClosestMarker(position, layerGroup);
-
-        // Then calculate route if a marker was found
         if (result.marker) {
             calculateRoute(position, result.marker.getLatLng())
                 .then(geometry => {
@@ -114,31 +93,19 @@ function setupLocationTracking(map, positionLayer, shelterLayer, bunkerLayer, ro
                             routeLayerGroup.removeLayer(layer);
                         }
                     });
-
-                    // Draw the new route
                     drawRoute(geometry, routeColor, routeLayerGroup);
                 })
-                .catch(error => {
-                    console.error('Error calculating route:', error);
-                });
+                .catch(error => console.error('Error calculating route:', error));
         }
-
         return result;
     }
 
-    // Set up event listeners for geolocation
     map.on('locationfound', onLocationFound);
     map.on('locationerror', onLocationError);
 
-    // Return the location tracking controls
     return {
         locateUser: function () {
-            console.log("Locating user...");
-            map.locate({
-                setView: true,
-                maxZoom: 16,
-                enableHighAccuracy: true
-            });
+            map.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true });
         }
     };
 }
@@ -147,51 +114,38 @@ function setupLocationTracking(map, positionLayer, shelterLayer, bunkerLayer, ro
 function updateInfoPanel(content) {
     const infoPanel = document.getElementById('position-info');
     if (infoPanel) {
-        // Create a nicely formatted panel
-        let formattedContent = `
+        infoPanel.innerHTML = `
             <div style="padding: 10px; background-color: white; border-radius: 4px; margin-bottom: 10px;">
                 ${content}
             </div>
         `;
-        infoPanel.innerHTML = formattedContent;
     }
 }
 
-// Function to fetch isochrones from OpenRouteService
+/**
+ * ORS isochrone helpers — kept for optional use, but DISABLED by default.
+ * These functions are no longer called for "valgt posisjon".
+ */
 async function fetchIsochronesFromORS(latlng, layer) {
-    // Get API key from the global ENV object set in the HTML/Pug template
-    // This assumes you've set window.ENV.ORS_API_KEY in your template
     const apiKey = window.ENV && window.ENV.ORS_API_KEY;
-    
-    // Check if API key is available
     if (!apiKey) {
         console.error('ORS API key missing. Make sure you\'ve set window.ENV.ORS_API_KEY in your template.');
         return false;
     }
-    
-    const minutes = [5, 10, 15]; // The time ranges we want
-    
-    // Define colors for different time ranges
-    const colors = {
-        5: '#e6c3ff',  // Light purple for 5 minutes
-        10: '#b366ff', // Medium purple for 10 minutes
-        15: '#9966cc'  // Dark purple for 15 minutes
-    };
-    
+
+    const minutes = [5, 10, 15];
+    const colors = { 5: '#e6c3ff', 10: '#b366ff', 15: '#9966cc' };
+
     try {
-        // The ORS API endpoint for isochrones
         const url = 'https://api.openrouteservice.org/v2/isochrones/foot-walking';
-        
-        // Prepare the request body
-        const requestBody = {
+        const body = {
             locations: [[latlng.lng, latlng.lat]],
-            range: minutes.map(min => min * 60), // Convert minutes to seconds
-            attributes: ['total_pop'], // Optional, if available
+            range: minutes.map(m => m * 60),
+            attributes: ['total_pop'],
             location_type: 'start',
             range_type: 'time'
         };
-        
-        // Make the API request
+
         const response = await fetch(url, {
             method: 'POST',
             headers: {
@@ -199,29 +153,24 @@ async function fetchIsochronesFromORS(latlng, layer) {
                 'Content-Type': 'application/json; charset=utf-8',
                 'Accept': 'application/json, application/geo+json'
             },
-            body: JSON.stringify(requestBody)
+            body: JSON.stringify(body)
         });
-        
+
         if (!response.ok) {
-            const errorData = await response.json();
-            console.error('ORS API Error:', errorData);
+            const err = await response.json();
+            console.error('ORS API Error:', err);
             throw new Error(`API error: ${response.status}`);
         }
-        
-        // Process the response
+
         const data = await response.json();
-        
-        // Add isochrones to the map
         if (data.features && data.features.length > 0) {
-            // ORS returns features in reverse order (largest first)
-            data.features.reverse().forEach((feature, idx) => {
-                const minutes = feature.properties.value / 60; // Convert seconds back to minutes
-                const color = colors[minutes] || colors[15];
-                
-                // Create the isochrone polygon
+            data.features.reverse().forEach(feature => {
+                const mins = feature.properties.value / 60;
+                const color = colors[mins] || colors[15];
+
                 const polygon = L.geoJSON(feature, {
                     style: {
-                        color: color,
+                        color,
                         weight: 2,
                         opacity: 0.7,
                         fillColor: color,
@@ -229,21 +178,13 @@ async function fetchIsochronesFromORS(latlng, layer) {
                         className: 'custom-isochrone'
                     }
                 }).addTo(layer);
-                
-                // Store walking time as property instead of binding a popup
-                polygon.walkingTime = minutes;
-                
-                // Add custom click handler for the isochrone
-                polygon.on('click', function(e) {
-                    // Update the info panel with walking time
-                    const infoContent = `<div style="margin-bottom: 5px;"><strong>Gåavstand:</strong> ${minutes} minutter</div>`;
-                    updateInfoPanel(infoContent);
-                    
-                    // Prevent the click from propagating to the map
+
+                polygon.walkingTime = mins;
+                polygon.on('click', function (e) {
+                    updateInfoPanel(`<div style="margin-bottom: 5px;"><strong>Gåavstand:</strong> ${mins} minutter</div>`);
                     L.DomEvent.stop(e);
                 });
             });
-            
             return true;
         } else {
             console.warn('No isochrone features returned from API');
@@ -255,119 +196,80 @@ async function fetchIsochronesFromORS(latlng, layer) {
     }
 }
 
-// Simple circle-based isochrones as a fallback
+// Simple circle fallback (unused by default)
 function createSimpleIsochrones(latlng, layer) {
-    // Define colors for different time ranges
-    const colors = {
-        5: '#e6c3ff',  // Light purple for 5 minutes
-        10: '#b366ff', // Medium purple for 10 minutes
-        15: '#9966cc'  // Dark purple for 15 minutes
-    };
-    
-    // Approximate walking distances
-    const walkingMinutes = [5, 10, 15];
-    const walkingSpeeds = {
-        5: 250,  // meters in 5 minutes
-        10: 500, // meters in 10 minutes
-        15: 750  // meters in 15 minutes
-    };
-    
-    // Create isochrones as circles with different radii
-    walkingMinutes.forEach(minutes => {
+    const colors = { 5: '#e6c3ff', 10: '#b366ff', 15: '#9966cc' };
+    const walkingSpeeds = { 5: 250, 10: 500, 15: 750 };
+
+    [5, 10, 15].forEach(minutes => {
         const radius = walkingSpeeds[minutes];
         const color = colors[minutes];
-        
-        // Create a circle to represent the isochrone
         const isochrone = L.circle(latlng, {
-            radius: radius,
-            color: color,
+            radius,
+            color,
             weight: 2,
             opacity: 0.7,
             fillColor: color,
             fillOpacity: 0.3,
             className: 'custom-isochrone'
         }).addTo(layer);
-        
-        // Store walking time as property
+
         isochrone.walkingTime = minutes;
-        
-        // Add custom click handler for the isochrone
-        isochrone.on('click', function(e) {
-            // Update the info panel with walking time
-            const infoContent = `<div style="margin-bottom: 5px;"><strong>Gåavstand:</strong> ${minutes} minutter</div>`;
-            updateInfoPanel(infoContent);
-            
-            // Prevent the click from propagating to the map
+        isochrone.on('click', function (e) {
+            updateInfoPanel(`<div style="margin-bottom: 5px;"><strong>Gåavstand:</strong> ${minutes} minutter</div>`);
             L.DomEvent.stop(e);
         });
     });
 }
 
-// Handle custom marker placement
-function setupCustomMarker(map, customLayer, shelterLayer, bunkerLayer, routeLayer, icons) {
+/**
+ * Custom marker (valgt posisjon)
+ * By default, NO isochrones are generated here. Only distances + routes.
+ * To re-enable, pass { enableIsochrones: true } as the last argument.
+ */
+function setupCustomMarker(map, customLayer, shelterLayer, bunkerLayer, routeLayer, icons, opts = {}) {
+    const enableIsochrones = !!opts.enableIsochrones; // default false
     let customMarker = null;
 
-    // Function to create custom marker and calculate distances
     function createCustomMarker(latlng) {
-        // Clear previous custom marker and related elements
+        // Clear previous marker and any shapes in this layer
         if (customMarker) {
             customLayer.removeLayer(customMarker);
             customLayer.eachLayer(layer => {
-                if (!(layer instanceof L.Marker)) {
-                    customLayer.removeLayer(layer);
-                }
+                if (!(layer instanceof L.Marker)) customLayer.removeLayer(layer);
             });
         }
 
-        // Add new custom marker
-        customMarker = L.marker(latlng, {
-            icon: icons.purpleIcon,
-            draggable: true
-        }).addTo(customLayer);
+        // Add the violet marker
+        customMarker = L.marker(latlng, { icon: icons.purpleIcon, draggable: true }).addTo(customLayer);
 
-        // Find closest shelter with route
+        // Nearest routes
         const closestShelter = findClosestMarkerWithRoute(latlng, shelterLayer, routeLayer, 'blue');
+        const closestBunker  = findClosestMarkerWithRoute(latlng, bunkerLayer, routeLayer, 'red');
 
-        // Find closest bunker with route
-        const closestBunker = findClosestMarkerWithRoute(latlng, bunkerLayer, routeLayer, 'red');
-        
-        // Try to fetch isochrones from OpenRouteService
-        fetchIsochronesFromORS(latlng, customLayer).catch(error => {
-            console.error('Error with ORS isochrones, falling back to circles:', error);
-            // Fall back to simple circles if the API fails
-            createSimpleIsochrones(latlng, customLayer);
-        });
+        // Do NOT make isochrones for selected position unless explicitly enabled
+        if (enableIsochrones) {
+            fetchIsochronesFromORS(latlng, customLayer).catch(err => {
+                console.error('Error with ORS isochrones, falling back to circles:', err);
+                createSimpleIsochrones(latlng, customLayer);
+            });
+        }
 
-        // Format distance display
+        // Info panel
         let infoContent = `<div style="margin-bottom: 10px;"><b>Din valgte posisjon</b></div>`;
-        let distanceUnitBunker = 'm';
-        let distanceUnitShelter = 'm';
-        let distanceBunker, distanceShelter;
 
-        if (closestBunker.distance >= 1000) {
-            distanceBunker = (closestBunker.distance / 1000).toFixed(1);
-            distanceUnitBunker = 'km';
-        } else {
-            distanceBunker = Math.round(closestBunker.distance);
-        }
-
-        if (closestShelter.distance >= 1000) {
-            distanceShelter = (closestShelter.distance / 1000).toFixed(1);
-            distanceUnitShelter = 'km';
-        } else {
-            distanceShelter = Math.round(closestShelter.distance);
-        }
-
-        // Build info content
         if (closestBunker.marker) {
+            const d = closestBunker.distance;
+            const distanceText = d >= 1000 ? (d / 1000).toFixed(1) + ' km' : Math.round(d) + ' m';
+
             let bunkerDetails = '';
             if (closestBunker.marker._popup) {
-                const popupElement = document.createElement('div');
-                popupElement.innerHTML = closestBunker.marker._popup._content;
-                bunkerDetails = popupElement.textContent.trim().replace(/\n\s+/g, ', ');
+                const div = document.createElement('div');
+                div.innerHTML = closestBunker.marker._popup._content;
+                bunkerDetails = div.textContent.trim().replace(/\n\s+/g, ', ');
             }
 
-            infoContent += `<div style="margin-bottom: 5px;"><b>Nærmeste Tilfluktsrom:</b> ${distanceBunker} ${distanceUnitBunker}</div>`;
+            infoContent += `<div style="margin-bottom: 5px;"><b>Nærmeste Tilfluktsrom:</b> ${distanceText}</div>`;
             if (bunkerDetails) {
                 infoContent += `<div style="font-size: 0.9em; margin-bottom: 10px;">${bunkerDetails}</div>`;
             }
@@ -376,50 +278,41 @@ function setupCustomMarker(map, customLayer, shelterLayer, bunkerLayer, routeLay
         }
 
         if (closestShelter.marker) {
-            infoContent += `<div><b>Nærmeste Alternative Tilfluktsrom:</b> ${distanceShelter} ${distanceUnitShelter}</div>`;
+            const d = closestShelter.distance;
+            const distanceText = d >= 1000 ? (d / 1000).toFixed(1) + ' km' : Math.round(d) + ' m';
+            infoContent += `<div><b>Nærmeste Alternative Tilfluktsrom:</b> ${distanceText}</div>`;
         } else {
-            infoContent += `<div><b>Ingen Alternative Tilfluktsrom funnet</b></div>`;
+            infoContent += `<div><b>Ingen Alternative Tilfluktsrom funnet</div>`;
         }
 
-        // Update info panel instead of showing popup
         updateInfoPanel(infoContent);
 
-        // Update distances and routes when marker is dragged
-        customMarker.on('dragend', function (event) {
+        // Recompute on drag
+        customMarker.on('dragend', (event) => {
             const newPosition = event.target.getLatLng();
             createCustomMarker(newPosition);
         });
     }
 
-    // Find closest marker and calculate route
     function findClosestMarkerWithRoute(position, layerGroup, routeLayerGroup, routeColor) {
-        // First find the closest marker
         const result = findClosestMarker(position, layerGroup);
-
-        // Then calculate route if a marker was found
         if (result.marker) {
             calculateRoute(position, result.marker.getLatLng())
                 .then(geometry => {
-                    // Clear previous routes of this color
                     routeLayerGroup.eachLayer(layer => {
                         if (layer.options && layer.options.style && layer.options.style.color === routeColor) {
                             routeLayerGroup.removeLayer(layer);
                         }
                     });
-
-                    // Draw the new route
                     drawRoute(geometry, routeColor, routeLayerGroup);
                 })
-                .catch(error => {
-                    console.error('Error calculating route:', error);
-                });
+                .catch(error => console.error('Error calculating route:', error));
         }
-
         return result;
     }
 
-    // Setup map click event to place custom marker
-    map.on('click', function (e) {
+    // Place custom marker on map clicks (but no isochrones)
+    map.on('click', (e) => {
         createCustomMarker(e.latlng);
     });
 
@@ -428,8 +321,6 @@ function setupCustomMarker(map, customLayer, shelterLayer, bunkerLayer, routeLay
             if (customMarker) {
                 customLayer.clearLayers();
                 customMarker = null;
-                
-                // Clear the info panel
                 const infoPanel = document.getElementById('position-info');
                 if (infoPanel) {
                     infoPanel.innerHTML = 'Klikk på kartet for å velge en posisjon og se informasjon her.';
