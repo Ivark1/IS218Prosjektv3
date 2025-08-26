@@ -257,7 +257,27 @@ function setupShelterIsochroneClick(shelterLayer, bunkerLayer, isochroneLayer) {
       .forEach(({ minutes, feature }) => unionInto(minutes, feature, isochroneLayer, shelterId));
 
     visibleIsochrones.set(shelterId, selections);
-    updateInfoPanel(`Isokroner vist for ${shelterType} (${selections.length} tidssoner)`);
+    updateInfoPanel(`
+        <div>
+            <p style="margin:0 0 6px 0;">
+            Isokroner vist for ${shelterType} (${selections.length} tidssoner)
+            </p>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+            <span style="display:inline-flex; align-items:center; gap:6px;">
+                <span aria-hidden="true" style="width:12px;height:12px;background:#2E7D32;border-radius:2px;display:inline-block;"></span>
+                <span>Grønn: 5&nbsp;minutter gangavstand</span>
+            </span>
+            <span style="display:inline-flex; align-items:center; gap:6px;">
+                <span aria-hidden="true" style="width:12px;height:12px;background:#FFEB3B;border-radius:2px;display:inline-block;border:1px solid rgba(0,0,0,0.25);"></span>
+                <span>Gul: 10&nbsp;minutter gangavstand</span>
+            </span>
+            <span style="display:inline-flex; align-items:center; gap:6px;">
+                <span aria-hidden="true" style="width:12px;height:12px;background:#F44336;border-radius:2px;display:inline-block;"></span>
+                <span>Rød: 15&nbsp;minutter gangavstand</span>
+            </span>
+            </div>
+        </div>
+        `);
   }
 
   // Attach click handlers to shelters
