@@ -43,6 +43,8 @@ block content
             label(for="isochrone-checkbox")
               | Tilgjengelighet (Gåavstand)
               span(style="display: inline-block; width: 20px; height: 8px; background: linear-gradient(to right, #e6c3ff, #9966cc); margin-left: 4px; vertical-align: middle;")
+            div.layer-control-item
+          button#clear-isochrones-button(style="padding: 8px 12px; background-color: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;") Fjern alle isokroner
 
       // Kartet
       div.map-container(style="flex: 1; position: relative;")
@@ -92,11 +94,6 @@ block content
           li Klikk på en rute for å se befolkningsdetaljer.
           li Klikk på kartet for legge inn markør og se avstand til nærmeste tilfluktsrom.
 
-    div.population-link-container(style="margin-top: 20px; text-align: center;")
-      a.population-link(href="/population", style="display: inline-block; padding: 12px 24px; background-color: #4a89dc; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); transition: background-color 0.3s ease;") 
-        | Se detaljert befolkningskart
-        span(style="margin-left: 8px;") →
-
   //- Add the environment variables script BEFORE the data scripts
   script.
     //- Create a global ENV object to store environment variables
@@ -134,3 +131,4 @@ block content
         toggleButton.textContent = sidebar.classList.contains('closed') ? '▶' : '◀';
       }
     });
+    

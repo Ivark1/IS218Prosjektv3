@@ -75,7 +75,7 @@ function createLocateControl(map, locationTracker, customMarkerHandler) {
 }
 
 // Setup layer control checkboxes
-function setupLayerControls(map, layers) {
+function setupLayerControls(map, layers, clearAllIsochronesFunction = null) {
     setTimeout(() => {
         // Setup event listeners for checkboxes
         document.getElementById('shelter-checkbox').addEventListener('change', function (e) {
@@ -83,6 +83,10 @@ function setupLayerControls(map, layers) {
                 map.addLayer(layers.shelterLayer);
             } else {
                 map.removeLayer(layers.shelterLayer);
+                // Clear any isochrones when shelters are hidden
+                if (clearAllIsochronesFunction) {
+                    clearAllIsochronesFunction();
+                }
             }
         });
 
@@ -91,6 +95,10 @@ function setupLayerControls(map, layers) {
                 map.addLayer(layers.bunkerLayer);
             } else {
                 map.removeLayer(layers.bunkerLayer);
+                // Clear any isochrones when bunkers are hidden
+                if (clearAllIsochronesFunction) {
+                    clearAllIsochronesFunction();
+                }
             }
         });
 
@@ -118,12 +126,34 @@ function setupLayerControls(map, layers) {
             }
         });
 
+        // Updated isochrone checkbox handler
         if (document.getElementById('isochrone-checkbox')) {
             document.getElementById('isochrone-checkbox').addEventListener('change', function (e) {
                 if (e.target.checked) {
                     map.addLayer(layers.isochroneLayer);
+                    // Show info about how to use isochrones
+                    const infoPanel = document.getElementById('position-info');
+                    if (infoPanel) {
+                        infoPanel.innerHTML = `<div style="padding: 10px; background-color: #e6f3ff; border-radius: 4px; margin-bottom: 10px;">
+                            <h4>Isokroner aktivert</h4>
+                            <p>Klikk på tilfluktsrom for å se gåavstander!</p>
+                        </div>`;
+                    }
                 } else {
                     map.removeLayer(layers.isochroneLayer);
+                    // Clear all isochrones when layer is disabled
+                    if (clearAllIsochronesFunction) {
+                        clearAllIsochronesFunction();
+                    }
+                }
+            });
+        }
+
+        // Add event listener for clear isochrones button
+        if (document.getElementById('clear-isochrones-button')) {
+            document.getElementById('clear-isochrones-button').addEventListener('click', function () {
+                if (clearAllIsochronesFunction) {
+                    clearAllIsochronesFunction();
                 }
             });
         }

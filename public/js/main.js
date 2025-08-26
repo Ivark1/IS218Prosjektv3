@@ -4,11 +4,11 @@
  */
 import { initializeProjection, initializeMap } from './map/config.js';
 import { getIcons } from './map/icons.js';
-import { createLayers, addShelters, addBunkers, setupPopulationClickHandling } from './map/layers.js';
+import { createLayers, addShelters, addBunkers } from './map/layers.js';
 import { setupLocationTracking, setupCustomMarker } from './map/position.js';
 import { createLocateControl, setupLayerControls } from './map/controls.js';
 import { initializeDrawing } from './map/drawing.js';
-import { addIsochrones, setupIsochroneClickHandling } from './map/isochrones.js';
+import { addIsochrones, setupShelterIsochroneClick, clearAllIsochrones } from './map/isochrones.js';
 
 document.addEventListener('DOMContentLoaded', async function () {
     try {
@@ -16,15 +16,39 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (!initializeProjection()) {
             return;
         }
+        
         // Initialize map
         const map = initializeMap();
+        
         // Create layer groups
         const layers = createLayers(map);
+        
         // Load icons
         const icons = await getIcons();
+        
         // Add data points to map
         addShelters(window.shelterData, layers.shelterLayer, icons.shelterIcon);
         addBunkers(window.bunkerData, layers.bunkerLayer, icons.bunkerIcon);
+        
+        // Initialize isochrones but don't add to map immediately
+        let clearAllIsochronesFunction = null;
+        if (window.isochroneData) {
+            // Initialize isochrone data
+            addIsochrones(window.isochroneData, layers.isochroneLayer);
+            
+            // Import the clearAllIsochrones function
+            const { clearAllIsochrones } = await import('./map/isochrones.js');
+            clearAllIsochronesFunction = () => clearAllIsochrones(layers.isochroneLayer);
+            
+            // Setup shelter click handling for isochrones AFTER shelters are added
+            setTimeout(() => {
+                setupShelterIsochroneClick(
+                    layers.shelterLayer, 
+                    layers.bunkerLayer, 
+                    layers.isochroneLayer
+                );
+            }, 500);
+        }
         
         // Setup custom marker handling
         const customMarkerHandler = setupCustomMarker(
@@ -36,23 +60,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             icons
         );
         
-        // Add isochrones if data exists
-        if (window.isochroneData) {
-            addIsochrones(window.isochroneData, layers.isochroneLayer);
-            // Setup isochrone click handling
-            setupIsochroneClickHandling(layers.isochroneLayer, map);
-        }
-        
-        // Initialize drawing tools and analysis
-        const drawingTools = initializeDrawing(map);
-        
-        // Setup population layer click handling
-        // The drawing module creates its own populationLayer
-        if (drawingTools && drawingTools.populationLayer) {
-            console.log('Setting up population click handling for drawing tools population layer');
-            setupPopulationClickHandling(drawingTools.populationLayer, map);
-        }
-        
         // Setup location tracking
         const locationTracker = setupLocationTracking(
             map,
@@ -63,31 +70,22 @@ document.addEventListener('DOMContentLoaded', async function () {
             icons
         );
         
+        // Initialize drawing tools and analysis
+        const drawingTools = initializeDrawing(map);
+        
         // Create UI controls
         createLocateControl(map, locationTracker, customMarkerHandler);
-        // Setup layer control checkboxes
-        setupLayerControls(map, layers);
+        
+        // Setup layer control checkboxes with clear isochrones function
+        setupLayerControls(map, layers, clearAllIsochronesFunction);
         
         // Ensure map renders correctly
         setTimeout(() => {
             map.invalidateSize();
-            
-            // Additional setup for population layers that might be added after initialization
-            // This catches population layers that might be added by other modules
-            map.eachLayer(function(layer) {
-                if (layer instanceof L.LayerGroup) {
-                    layer.eachLayer(function(sublayer) {
-                        if (sublayer._popup && sublayer._popup._content && 
-                            sublayer._popup._content.includes('Befolkning')) {
-                            console.log('Found population layer through map search');
-                            setupPopulationClickHandling(sublayer, map);
-                        }
-                    });
-                }
-            });
         }, 100);
         
         console.log('Map initialized successfully');
+        
     } catch (error) {
         console.error('Map initialization error:', error);
     }
