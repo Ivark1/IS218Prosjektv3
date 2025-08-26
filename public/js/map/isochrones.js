@@ -222,10 +222,15 @@ function setupShelterIsochroneClick(shelterLayer, bunkerLayer, isochroneLayer) {
         
         console.log(`Found ${shelterIsochrones.length} isochrones for shelter`);
         
+        // Sort isochrones by time in DESCENDING order (15, 10, 5) 
+        // so that when added to map, the smallest (5 min/green) will be on top
+        const sortedIsochrones = shelterIsochrones.sort((a, b) => (b.aa_mins || 0) - (a.aa_mins || 0));
+        console.log('Isochrones will be added in this order:', sortedIsochrones.map(iso => iso.aa_mins));
+        
         // Create and add isochrone layers for this shelter
         const createdLayers = [];
         
-        shelterIsochrones.forEach((isochrone, index) => {
+        sortedIsochrones.forEach((isochrone, index) => {
             try {
                 // Try both uppercase GEOM and lowercase geom
                 const geometry = isochrone.GEOM || isochrone.geom;
