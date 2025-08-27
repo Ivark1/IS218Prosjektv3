@@ -43,7 +43,7 @@ function addShelters(shelterData, shelterLayer, icon) {
 function addBunkers(bunkerData, bunkerLayer, icon) {
     if (!bunkerData || !bunkerData.length) return;
 
-    bunkerData.forEach((point, index) => {
+    bunkerData.forEach((point) => {
         if (point.geom && point.geom.coordinates) {
             try {
                 const utmEasting = point.geom.coordinates[0];
@@ -63,7 +63,7 @@ function addBunkers(bunkerData, bunkerLayer, icon) {
                         Romnr: ${point.romnr}
                     `);
             } catch (error) {
-                console.error(`Error converting coordinates for bunker ${index}:`, error);
+                console.error(`Error converting coordinates for bunker:`, error);
             }
         }
     });
