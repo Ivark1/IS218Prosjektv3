@@ -148,3 +148,15 @@ block content
       }
     });
     
+    const marker = L.marker([lat, lng], { icon: icon })
+    .addTo(bunkerLayer)
+    .bindPopup(`
+        <b>Offentlig tilfluktsrom</b><br>
+        Adresse: ${point.adresse}<br>
+        Kapasitet: ${point.plasser} personer<br>
+        Romnr: ${point.romnr}
+    `);
+
+    if (index === 0) { // Just for the first marker as a test
+        marker.openPopup();
+    }

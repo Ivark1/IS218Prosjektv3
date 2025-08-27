@@ -378,6 +378,7 @@ function setupShelterIsochroneClick(shelterLayer, bunkerLayer, isochroneLayer) {
       if (layer instanceof L.Marker) {
         layer.off('click');
         layer.on('click', (e) => {
+          layer.openPopup(); // <-- This line opens the popup
           handleShelterClick(layer, 'offentlig tilfluktsrom');
           L.DomEvent.stop(e);
         });
@@ -419,7 +420,7 @@ export {
   initializeIsochrones,
   setupShelterIsochroneClick,
   clearAllIsochrones,
-  setupIsochroneClickHandling,
+  setupIsochroneClickHandling,  
   // new:
   showAllIsochrones,
   hideAllIsochrones
